@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">O VaiViver usa este serviço para detectar a aba Reels e medir a rolagem no Feed do Instagram, e não lê conteúdo de nenhum outro aplicativo.</string>
+</resources>
