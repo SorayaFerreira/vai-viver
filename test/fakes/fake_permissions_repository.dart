@@ -17,8 +17,17 @@ class FakePermissionsRepository implements PermissionsRepository {
   int openBatteryOptimizationSettingsCallCount = 0;
   int setOnboardingCompleteCallCount = 0;
 
+  /// When non-null, [getStatus] throws this instead of returning [status].
+  Object? getStatusError;
+
+  /// When non-null, [setOnboardingComplete] throws this (after counting the call).
+  Object? setOnboardingCompleteError;
+
   @override
-  Future<PermissionStatus> getStatus() async => status;
+  Future<PermissionStatus> getStatus() async {
+    if (getStatusError != null) throw getStatusError!;
+    return status;
+  }
 
   @override
   Future<void> setAutostartAcknowledged(bool value) async {
@@ -44,7 +53,8 @@ class FakePermissionsRepository implements PermissionsRepository {
 
   @override
   Future<void> setOnboardingComplete(bool value) async {
-    _onboardingComplete = value;
     setOnboardingCompleteCallCount++;
+    if (setOnboardingCompleteError != null) throw setOnboardingCompleteError!;
+    _onboardingComplete = value;
   }
 }

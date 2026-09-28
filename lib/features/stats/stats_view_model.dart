@@ -17,7 +17,9 @@ class StatsViewModel extends AsyncNotifier<DailyStats> {
 
   Future<void> refresh() async {
     state = const AsyncLoading();
-    state = AsyncData(await ref.read(statsRepositoryProvider).getTodayStats());
+    state = await AsyncValue.guard(
+      () => ref.read(statsRepositoryProvider).getTodayStats(),
+    );
   }
 }
 

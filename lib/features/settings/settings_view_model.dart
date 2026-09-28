@@ -15,18 +15,25 @@ class SettingsViewModel extends AsyncNotifier<AppSettings> {
     return ref.watch(settingsRepositoryProvider).getSettings();
   }
 
-  Future<void> setReelsBlockEnabled(bool value) => _update((s) => s.copyWith(reelsBlockEnabled: value));
-  Future<void> setScrollLimitEnabled(bool value) => _update((s) => s.copyWith(scrollLimitEnabled: value));
-  Future<void> setScrollLimitMinutes(int minutes) => _update((s) => s.copyWith(scrollLimitMinutes: minutes));
+  Future<void> setReelsBlockEnabled(bool value) =>
+      _update((s) => s.copyWith(reelsBlockEnabled: value));
+  Future<void> setScrollLimitEnabled(bool value) =>
+      _update((s) => s.copyWith(scrollLimitEnabled: value));
+  Future<void> setScrollLimitMinutes(int minutes) =>
+      _update((s) => s.copyWith(scrollLimitMinutes: minutes));
 
   Future<void> _update(AppSettings Function(AppSettings) transform) async {
     final current = state.value;
     if (current == null) return;
     final updated = transform(current);
-    await ref.read(settingsRepositoryProvider).saveSettings(updated);
-    state = AsyncData(updated);
+    state = await AsyncValue.guard(() async {
+      await ref.read(settingsRepositoryProvider).saveSettings(updated);
+      return updated;
+    });
   }
 }
 
 final settingsViewModelProvider =
-    AsyncNotifierProvider<SettingsViewModel, AppSettings>(SettingsViewModel.new);
+    AsyncNotifierProvider<SettingsViewModel, AppSettings>(
+      SettingsViewModel.new,
+    );

@@ -13,22 +13,54 @@ class OnboardingFlowScreen extends ConsumerStatefulWidget {
   const OnboardingFlowScreen({super.key});
 
   @override
-  ConsumerState<OnboardingFlowScreen> createState() => _OnboardingFlowScreenState();
+  ConsumerState<OnboardingFlowScreen> createState() =>
+      _OnboardingFlowScreenState();
 }
 
-class _OnboardingFlowScreenState extends ConsumerState<OnboardingFlowScreen> {
+class _OnboardingFlowScreenState extends ConsumerState<OnboardingFlowScreen>
+    with WidgetsBindingObserver {
   final _controller = PageController();
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // The user grants permissions in system Settings and comes back here.
+    if (state == AppLifecycleState.resumed) {
+      ref.read(permissionsViewModelProvider.notifier).refresh();
+    }
+  }
+
   void _goNext() {
-    _controller.nextPage(duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
+    _controller.nextPage(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+    );
   }
 
   Future<void> _finish() async {
-    await ref.read(permissionsRepositoryProvider).setOnboardingComplete(true);
+    try {
+      await ref.read(permissionsRepositoryProvider).setOnboardingComplete(true);
+    } catch (err) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Erro ao concluir: $err')));
+      return;
+    }
     if (!mounted) return;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const HomeScreen()),
-    );
+    Navigator.of(context)
+        .pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
   }
 
   @override
@@ -44,6 +76,7 @@ class _OnboardingFlowScreenState extends ConsumerState<OnboardingFlowScreen> {
             WelcomeStep(onNext: _goNext),
             _StepScaffold(
               onNext: _goNext,
+              canAdvance: status.accessibilityEnabled,
               child: AccessibilityStatusTile(status: status),
             ),
             _StepScaffold(
@@ -69,11 +102,17 @@ class _OnboardingFlowScreenState extends ConsumerState<OnboardingFlowScreen> {
 }
 
 class _StepScaffold extends StatelessWidget {
-  const _StepScaffold({required this.child, required this.onNext, this.buttonLabel = 'Próximo'});
+  const _StepScaffold({
+    required this.child,
+    required this.onNext,
+    this.buttonLabel = 'Próximo',
+    this.canAdvance = true,
+  });
 
   final Widget child;
   final VoidCallback onNext;
   final String buttonLabel;
+  final bool canAdvance;
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +121,10 @@ class _StepScaffold extends StatelessWidget {
       child: Column(
         children: [
           Expanded(child: child),
-          ElevatedButton(onPressed: onNext, child: Text(buttonLabel)),
+          ElevatedButton(
+            onPressed: canAdvance ? onNext : null,
+            child: Text(buttonLabel),
+          ),
         ],
       ),
     );

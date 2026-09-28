@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:vaiviver/domain/models/permission_status.dart';
@@ -20,9 +21,14 @@ void main() {
     addTearDown(container.dispose);
 
     await container.read(permissionsViewModelProvider.future);
-    await container.read(permissionsViewModelProvider.notifier).acknowledgeAutostart();
+    await container
+        .read(permissionsViewModelProvider.notifier)
+        .acknowledgeAutostart();
 
-    expect(container.read(permissionsViewModelProvider).value!.autostartAcknowledged, true);
+    expect(
+      container.read(permissionsViewModelProvider).value!.autostartAcknowledged,
+      true,
+    );
   });
 
   test('openAccessibilitySettings delegates to the repository', () async {
@@ -33,8 +39,48 @@ void main() {
     addTearDown(container.dispose);
 
     await container.read(permissionsViewModelProvider.future);
-    await container.read(permissionsViewModelProvider.notifier).openAccessibilitySettings();
+    await container
+        .read(permissionsViewModelProvider.notifier)
+        .openAccessibilitySettings();
 
     expect(fakeRepo.openAccessibilitySettingsCallCount, 1);
+  });
+
+  test(
+    'refresh surfaces a channel failure as AsyncError instead of throwing',
+    () async {
+      final fakeRepo = FakePermissionsRepository();
+      final container = ProviderContainer(
+        overrides: [permissionsRepositoryProvider.overrideWithValue(fakeRepo)],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(permissionsViewModelProvider.future);
+      fakeRepo.getStatusError = PlatformException(code: 'unavailable');
+      await container.read(permissionsViewModelProvider.notifier).refresh();
+
+      final state = container.read(permissionsViewModelProvider);
+      expect(state.isLoading, false);
+      expect(state.error, isA<PlatformException>());
+    },
+  );
+
+  test('acknowledgeAutostart surfaces a channel failure as AsyncError instead of throwing', () async {
+    final fakeRepo = FakePermissionsRepository();
+    final container = ProviderContainer(
+      overrides: [permissionsRepositoryProvider.overrideWithValue(fakeRepo)],
+    );
+    addTearDown(container.dispose);
+
+    await container.read(permissionsViewModelProvider.future);
+    fakeRepo.getStatusError = PlatformException(code: 'unavailable');
+    await container
+        .read(permissionsViewModelProvider.notifier)
+        .acknowledgeAutostart();
+
+    expect(
+      container.read(permissionsViewModelProvider).error,
+      isA<PlatformException>(),
+    );
   });
 }

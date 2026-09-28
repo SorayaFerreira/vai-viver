@@ -16,12 +16,17 @@ class PermissionsViewModel extends AsyncNotifier<PermissionStatus> {
   }
 
   Future<void> refresh() async {
-    state = AsyncData(await ref.read(permissionsRepositoryProvider).getStatus());
+    state = await AsyncValue.guard(
+      () => ref.read(permissionsRepositoryProvider).getStatus(),
+    );
   }
 
   Future<void> acknowledgeAutostart() async {
-    await ref.read(permissionsRepositoryProvider).setAutostartAcknowledged(true);
-    await refresh();
+    state = await AsyncValue.guard(() async {
+      final repository = ref.read(permissionsRepositoryProvider);
+      await repository.setAutostartAcknowledged(true);
+      return repository.getStatus();
+    });
   }
 
   Future<void> openAccessibilitySettings() {
@@ -29,9 +34,13 @@ class PermissionsViewModel extends AsyncNotifier<PermissionStatus> {
   }
 
   Future<void> openBatteryOptimizationSettings() {
-    return ref.read(permissionsRepositoryProvider).openBatteryOptimizationSettings();
+    return ref
+        .read(permissionsRepositoryProvider)
+        .openBatteryOptimizationSettings();
   }
 }
 
 final permissionsViewModelProvider =
-    AsyncNotifierProvider<PermissionsViewModel, PermissionStatus>(PermissionsViewModel.new);
+    AsyncNotifierProvider<PermissionsViewModel, PermissionStatus>(
+      PermissionsViewModel.new,
+    );

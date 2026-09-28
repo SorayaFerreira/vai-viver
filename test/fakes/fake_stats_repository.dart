@@ -6,6 +6,12 @@ class FakeStatsRepository implements StatsRepository {
 
   DailyStats stats;
 
+  /// When non-null, [getTodayStats] throws this instead of returning [stats].
+  Object? error;
+
   @override
-  Future<DailyStats> getTodayStats() async => stats;
+  Future<DailyStats> getTodayStats() async {
+    if (error != null) throw error!;
+    return stats;
+  }
 }
