@@ -6,16 +6,21 @@ import 'package:vaiviver/domain/models/daily_stats.dart';
 import 'package:vaiviver/domain/models/permission_status.dart';
 import 'package:vaiviver/features/home/home_screen.dart';
 import 'package:vaiviver/features/permissions/permissions_view_model.dart';
+import 'package:vaiviver/features/settings/settings_view_model.dart';
 import 'package:vaiviver/features/stats/stats_view_model.dart';
 
 import '../../fakes/fake_permissions_repository.dart';
+import '../../fakes/fake_settings_repository.dart';
 import '../../fakes/fake_stats_repository.dart';
 import '../../helpers/phone_viewport.dart';
 import '../../helpers/themed_app.dart';
 
 Widget _wrap(Widget child, {required List<Override> overrides}) {
   return ProviderScope(
-    overrides: overrides,
+    overrides: [
+      settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
+      ...overrides,
+    ],
     child: themedApp(
       home: child,
       routes: {
@@ -34,7 +39,11 @@ void main() {
         overrides: [
           statsRepositoryProvider.overrideWithValue(
             FakeStatsRepository(
-              const DailyStats(reelsBlockedCount: 4, scrollSecondsSaved: 300),
+              const DailyStats(
+                reelsBlockedCount: 4,
+                feedSecondsToday: 300,
+                feedBlockedCount: 1,
+              ),
             ),
           ),
           permissionsRepositoryProvider.overrideWithValue(
@@ -47,7 +56,11 @@ void main() {
 
     expect(find.bySemanticsLabel('Reels bloqueados hoje: 4'), findsOneWidget);
     expect(
-      find.bySemanticsLabel('Minutos de scroll evitados hoje: 5 min'),
+      find.bySemanticsLabel('Tempo no Feed hoje: 5 de 20 min'),
+      findsOneWidget,
+    );
+    expect(
+      find.bySemanticsLabel('Saídas forçadas do Feed hoje: 1'),
       findsOneWidget,
     );
     expect(find.text('Proteções ativas'), findsOneWidget);
@@ -104,7 +117,11 @@ void main() {
     tester,
   ) async {
     final statsRepo = FakeStatsRepository(
-      const DailyStats(reelsBlockedCount: 4, scrollSecondsSaved: 300),
+      const DailyStats(
+        reelsBlockedCount: 4,
+        feedSecondsToday: 300,
+        feedBlockedCount: 1,
+      ),
     );
     final permissionsRepo = FakePermissionsRepository(
       status: const PermissionStatus(
@@ -130,7 +147,8 @@ void main() {
     // The world changes while the app is in the background.
     statsRepo.stats = const DailyStats(
       reelsBlockedCount: 9,
-      scrollSecondsSaved: 600,
+      feedSecondsToday: 600,
+      feedBlockedCount: 2,
     );
     permissionsRepo.status = const PermissionStatus(
       accessibilityEnabled: true,
@@ -149,7 +167,7 @@ void main() {
 
     expect(find.bySemanticsLabel('Reels bloqueados hoje: 9'), findsOneWidget);
     expect(
-      find.bySemanticsLabel('Minutos de scroll evitados hoje: 10 min'),
+      find.bySemanticsLabel('Tempo no Feed hoje: 10 de 20 min'),
       findsOneWidget,
     );
     expect(find.text('Proteções ativas'), findsOneWidget);
@@ -168,7 +186,8 @@ void main() {
                 FakeStatsRepository(
                   const DailyStats(
                     reelsBlockedCount: 128,
-                    scrollSecondsSaved: 5400,
+                    feedSecondsToday: 5400,
+                    feedBlockedCount: 3,
                   ),
                 ),
               ),

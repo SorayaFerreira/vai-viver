@@ -10,15 +10,10 @@ import '../theme/app_dimens.dart';
 ///   screens, landscape) instead of overflowing or clipping;
 /// - caps line length at [maxContentWidth] on wide screens;
 /// - pins an optional [bottomAction] (e.g. "Próximo") above the nav bar.
-/// With [centerContent], short content is centered vertically and still
-/// scrolls once it no longer fits.
+/// Short content is centered vertically (the app's screens hold little, and
+/// top-aligned they looked empty); once it no longer fits, it scrolls.
 class ResponsiveBody extends StatelessWidget {
-  const ResponsiveBody({
-    super.key,
-    required this.child,
-    this.bottomAction,
-    this.centerContent = false,
-  });
+  const ResponsiveBody({super.key, required this.child, this.bottomAction});
 
   static const maxContentWidth = 560.0;
   static const _padding = EdgeInsets.fromLTRB(
@@ -30,7 +25,6 @@ class ResponsiveBody extends StatelessWidget {
 
   final Widget child;
   final Widget? bottomAction;
-  final bool centerContent;
 
   @override
   Widget build(BuildContext context) {
@@ -44,16 +38,23 @@ class ResponsiveBody extends StatelessWidget {
                   constraints.maxWidth - _padding.horizontal,
                   maxContentWidth,
                 );
-                final minHeight = centerContent
-                    ? math.max(0.0, constraints.maxHeight - _padding.vertical)
-                    : 0.0;
+                final minHeight = math.max(
+                  0.0,
+                  constraints.maxHeight - _padding.vertical,
+                );
                 return SingleChildScrollView(
                   padding: _padding,
                   child: Center(
                     child: ConstrainedBox(
                       constraints: BoxConstraints.tightFor(width: width)
                           .copyWith(minHeight: minHeight),
-                      child: centerContent ? Center(child: child) : child,
+                      // A Column rather than Center: it centers vertically
+                      // but keeps the child at full width (cards stretch).
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [child],
+                      ),
                     ),
                   ),
                 );

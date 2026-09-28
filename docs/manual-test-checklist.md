@@ -10,7 +10,8 @@ Antes de considerar o MVP pronto, rode este roteiro no aparelho físico
    do Android Studio conectado ao aparelho), inspecione a aba Reels e a aba Feed
    na barra inferior — anote o `resource-id` e/ou `content-description` reais.
 3. Compare com as constantes em `ReelsTabRule.REELS_TAB_VIEW_ID_KEYWORDS` /
-   `REELS_TAB_CONTENT_DESCRIPTIONS` e `FeedScrollLimitRule.FEED_TAB_VIEW_ID_KEYWORDS`
+   `REELS_TAB_CONTENT_DESCRIPTIONS` e `HomeTabDetector.VIEW_ID_KEYWORDS` /
+   `CONTENT_DESCRIPTIONS`
    (`android/app/src/main/kotlin/com/sorayaferreira/vaiviver/detection/`).
    Ajuste as listas se os valores reais forem diferentes. **Importante:**
    confirme também que o atributo `selected`/`isSelected` (visível no
@@ -18,6 +19,8 @@ Antes de considerar o MVP pronto, rode este roteiro no aparelho físico
    `resource-id`/`content-description` — se o Instagram marcar `selected`
    num container pai ou num filho diferente, as regras nunca vão bater,
    mesmo com os identificadores certos.
+   Atalho: em build de debug (`flutter run`), `adb logcat -s VaiViver/tabs`
+   mostra os nós selecionados de cada tela do Instagram (só identificadores).
 
 ## Onboarding
 
@@ -31,7 +34,7 @@ Antes de considerar o MVP pronto, rode este roteiro no aparelho físico
 7. Complete o passo de Autostart: siga as instruções na tela (Configurações >
    Apps > Gerenciar apps > VaiViver > Autostart, ou App Segurança > Permissões
    > Autostart no MIUI/HyperOS) e marque a caixinha.
-8. Configure o limite de scroll (ex: 1 minuto, pra testar mais rápido) e conclua
+8. Configure o limite diário no Feed (ex: 1 minuto, pra testar mais rápido) e conclua
    — deve cair na tela Home.
 
 ## Bloqueio de Reels
@@ -41,16 +44,19 @@ Antes de considerar o MVP pronto, rode este roteiro no aparelho físico
 10. Desative o toggle "Bloquear aba Reels" nas Configurações do VaiViver, volte
     ao Instagram e toque em Reels de novo — agora não deve acontecer nada.
 
-## Limite de scroll
+## Limite diário no Feed
 
-11. Reative "Bloquear aba Reels" (ou deixe como está) e ative "Limite de scroll
-    no Feed" com um valor baixo (1 minuto). Abra o Instagram, vá para o Feed e
-    role continuamente — ao passar do tempo configurado, o VaiViver deve te
-    levar para a tela inicial.
-12. Saia do Instagram e volte a abrir — o contador deve ter reiniciado (você
-    deve conseguir rolar pelo tempo configurado de novo).
-13. Desative "Limite de scroll no Feed" e role o Feed por mais tempo que o
-    limite configurado — não deve acontecer nada.
+11. Com "Limite diário no Feed" em 1 minuto, abra o Instagram na Início e
+    **não toque em nada** por 1 minuto — o VaiViver deve te levar para a tela
+    inicial mesmo sem rolagem.
+12. Reabra o Instagram — ele abre na Início; você tem ~5 s para tocar em
+    Direct/Buscar/Perfil. Nessas abas nada acontece; voltar para a Início te
+    expulsa na hora. No dia seguinte (ou apagando os dados do app), o limite
+    volta a valer do zero.
+13. Apague a tela com o Instagram na Início por 2 minutos e volte: o tempo de
+    tela apagada não pode ter contado (confira "Tempo no Feed hoje" na Home).
+    Desative o limite: o tempo continua aparecendo na Home, mas nada é
+    bloqueado.
 
 ## Robustez
 
@@ -63,7 +69,8 @@ Antes de considerar o MVP pronto, rode este roteiro no aparelho físico
     deve refletir isso na próxima vez que ela ganhar foco, sem precisar reabrir
     o app.
 16. Confira as estatísticas do dia na tela Home depois dos testes acima —
-    "Reels bloqueados hoje" e "Minutos de scroll evitados hoje" devem refletir
+    "Tempo no Feed hoje", "Reels bloqueados hoje" e "Saídas forçadas do Feed
+    hoje" devem refletir
     o que aconteceu.
 
 ## Contagem de eventos
@@ -75,16 +82,12 @@ Antes de considerar o MVP pronto, rode este roteiro no aparelho físico
     a contagem em um incremento por sessão; este passo é só a confirmação
     final no aparelho real).
 
-## Reset de sessão por engano (risco conhecido, ver design.md §4.2)
+## Fim de sessão por engano (corrigido, ver design.md §4.2)
 
-18. Role o Feed continuamente e, no meio da rolagem, abra o teclado (toque
-    na busca ou em comentar um post) ou aperte um botão de volume — depois
-    volte a rolar até o tempo total configurado. Se o limite não disparar
-    no tempo esperado (ou nunca disparar nessa sessão), é o risco já
-    documentado: o teclado e os painéis do sistema (volume, notificações)
-    podem resetar o contador de scroll por engano. Não é uma falha de
-    segurança, só faz o limite demorar mais que o configurado — reportar
-    se isso acontecer na prática, para priorizar o conserto.
+18. Na Início, abra o teclado (busca ou comentário), aperte o volume e puxe
+    uma notificação — nada disso pode encerrar a sessão. Depois do limite,
+    voltar do teclado/volume para a Início deve expulsar na hora (sem nova
+    janela de 5 s).
 
 ## Visual e responsividade
 

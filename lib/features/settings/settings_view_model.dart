@@ -17,10 +17,10 @@ class SettingsViewModel extends AsyncNotifier<AppSettings> {
 
   Future<void> setReelsBlockEnabled(bool value) =>
       _update((s) => s.copyWith(reelsBlockEnabled: value));
-  Future<void> setScrollLimitEnabled(bool value) =>
-      _update((s) => s.copyWith(scrollLimitEnabled: value));
-  Future<void> setScrollLimitMinutes(int minutes) =>
-      _update((s) => s.copyWith(scrollLimitMinutes: minutes));
+  Future<void> setFeedLimitEnabled(bool value) =>
+      _update((s) => s.copyWith(feedLimitEnabled: value));
+  Future<void> setFeedLimitMinutes(int minutes) =>
+      _update((s) => s.copyWith(feedLimitMinutes: minutes));
 
   Future<void> _update(AppSettings Function(AppSettings) transform) async {
     final current = state.value;

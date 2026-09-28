@@ -14,8 +14,8 @@ class MethodChannelSettingsRepository implements SettingsRepository {
     );
     return AppSettings(
       reelsBlockEnabled: map!['reelsBlockEnabled'] as bool,
-      scrollLimitEnabled: map['scrollLimitEnabled'] as bool,
-      scrollLimitMinutes: map['scrollLimitMinutes'] as int,
+      feedLimitEnabled: map['feedLimitEnabled'] as bool,
+      feedLimitMinutes: map['feedLimitMinutes'] as int,
     );
   }
 
@@ -23,8 +23,8 @@ class MethodChannelSettingsRepository implements SettingsRepository {
   Future<void> saveSettings(AppSettings settings) {
     return _bridge.channel.invokeMethod('setSettings', {
       'reelsBlockEnabled': settings.reelsBlockEnabled,
-      'scrollLimitEnabled': settings.scrollLimitEnabled,
-      'scrollLimitMinutes': settings.scrollLimitMinutes,
+      'feedLimitEnabled': settings.feedLimitEnabled,
+      'feedLimitMinutes': settings.feedLimitMinutes,
     });
   }
 }

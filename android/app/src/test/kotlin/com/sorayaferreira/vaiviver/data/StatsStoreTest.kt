@@ -11,16 +11,17 @@ class StatsStoreTest {
     }
 
     @Test
-    fun `accumulates reels-blocked count and scroll seconds saved for the same day`() {
+    fun `accumulates reels blocks, feed time and feed blocks for the same day`() {
         val store = StatsStore(InMemoryKeyValueStore(), today = { "2026-09-26" })
 
         store.incrementReelsBlocked()
         store.incrementReelsBlocked()
-        store.addScrollSecondsSaved(120)
+        store.addFeedMillis(90_500)
+        store.addFeedMillis(30_000)
+        store.incrementFeedBlocked()
 
-        val stats = store.getToday()
-        assertEquals(2, stats.reelsBlockedCount)
-        assertEquals(120, stats.scrollSecondsSaved)
+        assertEquals(120_500L, store.feedMillisToday())
+        assertEquals(DailyStats(reelsBlockedCount = 2, feedSecondsToday = 120, feedBlockedCount = 1), store.getToday())
     }
 
     @Test
@@ -29,8 +30,10 @@ class StatsStoreTest {
         val store = StatsStore(InMemoryKeyValueStore(), today = { date })
 
         store.incrementReelsBlocked()
+        store.addFeedMillis(1_000)
         date = "2026-09-27"
 
         assertEquals(0, store.getToday().reelsBlockedCount)
+        assertEquals(0L, store.feedMillisToday())
     }
 }

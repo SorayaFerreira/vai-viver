@@ -25,14 +25,14 @@ class NativeBridgeTest {
     @Test
     fun `getSettings returns the current settings as a map`() {
         val settingsStore = SettingsStore(InMemoryKeyValueStore()).apply {
-            setSettings(AppSettings.DEFAULT.copy(scrollLimitMinutes = 5))
+            setSettings(AppSettings.DEFAULT.copy(feedLimitMinutes = 25))
         }
         val result = RecordingResult()
 
         bridge(settingsStore = settingsStore).onMethodCall(MethodCall("getSettings", null), result)
 
         val map = result.success as Map<*, *>
-        assertEquals(5, map["scrollLimitMinutes"])
+        assertEquals(25, map["feedLimitMinutes"])
         assertEquals(true, map["reelsBlockEnabled"])
     }
 
@@ -42,14 +42,30 @@ class NativeBridgeTest {
         val result = RecordingResult()
         val args = mapOf(
             "reelsBlockEnabled" to false,
-            "scrollLimitEnabled" to true,
-            "scrollLimitMinutes" to 7
+            "feedLimitEnabled" to true,
+            "feedLimitMinutes" to 30
         )
 
         bridge(settingsStore = settingsStore).onMethodCall(MethodCall("setSettings", args), result)
 
-        assertEquals(7, settingsStore.getSettings().scrollLimitMinutes)
+        assertEquals(30, settingsStore.getSettings().feedLimitMinutes)
         assertEquals(false, settingsStore.getSettings().reelsBlockEnabled)
+    }
+
+    @Test
+    fun `getTodayStats exposes feed time in seconds and feed blocks`() {
+        val stats = StatsStore(InMemoryKeyValueStore()).apply {
+            addFeedMillis(61_900)
+            incrementFeedBlocked()
+        }
+        val result = RecordingResult()
+
+        bridge(statsStore = stats).onMethodCall(MethodCall("getTodayStats", null), result)
+
+        val map = result.success as Map<*, *>
+        assertEquals(61, map["feedSecondsToday"])
+        assertEquals(1, map["feedBlockedCount"])
+        assertEquals(0, map["reelsBlockedCount"])
     }
 
     @Test

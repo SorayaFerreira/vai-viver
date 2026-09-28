@@ -14,7 +14,8 @@ class MethodChannelStatsRepository implements StatsRepository {
     );
     return DailyStats(
       reelsBlockedCount: map!['reelsBlockedCount'] as int,
-      scrollSecondsSaved: map['scrollSecondsSaved'] as int,
+      feedSecondsToday: map['feedSecondsToday'] as int,
+      feedBlockedCount: map['feedBlockedCount'] as int,
     );
   }
 }

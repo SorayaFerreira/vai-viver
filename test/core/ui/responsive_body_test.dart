@@ -43,7 +43,6 @@ void main() {
           themedApp(
             home: AppScreen(
               body: ResponsiveBody(
-                centerContent: true,
                 bottomAction: ElevatedButton(
                   onPressed: () {},
                   child: const Text('Próximo'),
@@ -95,19 +94,33 @@ void main() {
     );
   });
 
-  testWidgets('centerContent centers short content in the safe area', (
+  testWidgets('short content is centered in the safe area', (tester) async {
+    applyViewport(tester, phoneViewports.first);
+    await tester.pumpWidget(
+      themedApp(
+        home: const AppScreen(body: ResponsiveBody(child: Text('meio'))),
+      ),
+    );
+
+    // Safe area 36..849; minus the 8/24 scroll padding -> 44..825.
+    expect(tester.getCenter(find.text('meio')).dy, closeTo(434.5, 1));
+  });
+
+  testWidgets('a short card is vertically centered and keeps the full width', (
     tester,
   ) async {
     applyViewport(tester, phoneViewports.first);
     await tester.pumpWidget(
       themedApp(
         home: const AppScreen(
-          body: ResponsiveBody(centerContent: true, child: Text('meio')),
+          body: ResponsiveBody(child: SizedBox(key: Key('card'), height: 100)),
         ),
       ),
     );
 
-    // Safe area 36..849; minus the 8/24 scroll padding -> 44..825.
-    expect(tester.getCenter(find.text('meio')).dy, closeTo(434.5, 1));
+    final card = tester.getRect(find.byKey(const Key('card')));
+    // Same content box as above (44..825), so the centre is at 434.5.
+    expect(card.center.dy, closeTo(434.5, 1));
+    expect(card.width, 393 - 32);
   });
 }

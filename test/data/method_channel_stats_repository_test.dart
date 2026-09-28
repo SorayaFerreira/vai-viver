@@ -18,7 +18,11 @@ void main() {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (call) async {
             expect(call.method, 'getTodayStats');
-            return {'reelsBlockedCount': 7, 'scrollSecondsSaved': 120};
+            return {
+              'reelsBlockedCount': 7,
+              'feedSecondsToday': 120,
+              'feedBlockedCount': 2,
+            };
           });
       final repository = MethodChannelStatsRepository(
         NativeBridge(channel: channel),
@@ -27,7 +31,8 @@ void main() {
       final stats = await repository.getTodayStats();
 
       expect(stats.reelsBlockedCount, 7);
-      expect(stats.scrollSecondsSaved, 120);
+      expect(stats.feedSecondsToday, 120);
+      expect(stats.feedBlockedCount, 2);
     },
   );
 

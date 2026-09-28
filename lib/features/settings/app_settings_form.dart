@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_dimens.dart';
 import '../../core/theme/app_typography.dart';
+import '../../domain/feed_limit_steps.dart';
 import 'settings_view_model.dart';
 
 class AppSettingsForm extends ConsumerWidget {
@@ -25,19 +26,19 @@ class AppSettingsForm extends ConsumerWidget {
                 .setReelsBlockEnabled(value),
           ),
           SwitchListTile(
-            key: const Key('scroll-limit-switch'),
-            title: const Text('Limite de scroll no Feed'),
-            value: settings.scrollLimitEnabled,
+            key: const Key('feed-limit-switch'),
+            title: const Text('Limite diário no Feed'),
+            value: settings.feedLimitEnabled,
             onChanged: (value) => ref
                 .read(settingsViewModelProvider.notifier)
-                .setScrollLimitEnabled(value),
+                .setFeedLimitEnabled(value),
           ),
           _MinutesStepper(
-            minutes: settings.scrollLimitMinutes,
-            enabled: settings.scrollLimitEnabled,
+            minutes: settings.feedLimitMinutes,
+            enabled: settings.feedLimitEnabled,
             onChanged: (minutes) => ref
                 .read(settingsViewModelProvider.notifier)
-                .setScrollLimitMinutes(minutes),
+                .setFeedLimitMinutes(minutes),
           ),
         ],
       ),
@@ -47,9 +48,9 @@ class AppSettingsForm extends ConsumerWidget {
   }
 }
 
-/// "Limite de scroll (minutos)" with −/+ buttons. A Row with an Expanded
-/// label (not a ListTile trailing) so the label wraps under large fonts
-/// instead of fighting the buttons for width.
+/// "Minutos por dia no Feed" with −/+ buttons (steps in feed_limit_steps.dart).
+/// A Row with an Expanded label (not a ListTile trailing) so the label wraps
+/// under large fonts instead of fighting the buttons for width.
 class _MinutesStepper extends StatelessWidget {
   const _MinutesStepper({
     required this.minutes,
@@ -74,7 +75,7 @@ class _MinutesStepper extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              'Limite de scroll (minutos)',
+              'Minutos por dia no Feed',
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: enabled
                     ? null
@@ -83,10 +84,10 @@ class _MinutesStepper extends StatelessWidget {
             ),
           ),
           IconButton.outlined(
-            key: const Key('scroll-limit-decrement'),
+            key: const Key('feed-limit-decrement'),
             icon: const Icon(Icons.remove),
             onPressed: enabled && minutes > 1
-                ? () => onChanged(minutes - 1)
+                ? () => onChanged(previousFeedLimit(minutes))
                 : null,
           ),
           ConstrainedBox(
@@ -102,9 +103,9 @@ class _MinutesStepper extends StatelessWidget {
             ),
           ),
           IconButton.outlined(
-            key: const Key('scroll-limit-increment'),
+            key: const Key('feed-limit-increment'),
             icon: const Icon(Icons.add),
-            onPressed: enabled ? () => onChanged(minutes + 1) : null,
+            onPressed: enabled ? () => onChanged(nextFeedLimit(minutes)) : null,
           ),
         ],
       ),

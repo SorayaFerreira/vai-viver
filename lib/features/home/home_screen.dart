@@ -8,9 +8,11 @@ import '../../core/ui/glass_card.dart';
 import '../../core/ui/responsive_body.dart';
 import '../../core/ui/stat_value.dart';
 import '../../core/ui/terminal_label.dart';
+import '../../domain/models/app_settings.dart';
 import '../../domain/models/daily_stats.dart';
 import '../../domain/models/permission_status.dart';
 import '../permissions/permissions_view_model.dart';
+import '../settings/settings_view_model.dart';
 import '../stats/stats_view_model.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -46,6 +48,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   Widget build(BuildContext context) {
     final permissions = ref.watch(permissionsViewModelProvider);
     final stats = ref.watch(statsViewModelProvider);
+    final settings = ref.watch(settingsViewModelProvider);
 
     return AppScreen(
       title: 'VaiViver',
@@ -69,7 +72,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             ),
             const SizedBox(height: AppSpacing.md),
             stats.when(
-              data: (data) => _StatsCard(stats: data),
+              data: (data) =>
+                  _StatsCard(stats: data, feedLimit: settings.value),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (err, _) => Text('Erro ao carregar estatísticas: $err'),
             ),
@@ -139,26 +143,36 @@ class _PermissionsStatusCard extends StatelessWidget {
 }
 
 class _StatsCard extends StatelessWidget {
-  const _StatsCard({required this.stats});
+  const _StatsCard({required this.stats, required this.feedLimit});
 
   final DailyStats stats;
 
+  /// Null while settings load; the card then shows plain minutes.
+  final AppSettings? feedLimit;
+
   @override
   Widget build(BuildContext context) {
-    final minutesSaved = (stats.scrollSecondsSaved / 60).floor();
+    final feedMinutes = stats.feedSecondsToday ~/ 60;
+    final limit = feedLimit;
     return GlassCard(
       child: Wrap(
         spacing: AppSpacing.xl,
         runSpacing: AppSpacing.lg,
         children: [
           StatValue(
+            value: '$feedMinutes',
+            unit: limit != null && limit.feedLimitEnabled
+                ? 'de ${limit.feedLimitMinutes} min'
+                : 'min',
+            label: 'Tempo no Feed hoje',
+          ),
+          StatValue(
             value: '${stats.reelsBlockedCount}',
             label: 'Reels bloqueados hoje',
           ),
           StatValue(
-            value: '$minutesSaved',
-            unit: 'min',
-            label: 'Minutos de scroll evitados hoje',
+            value: '${stats.feedBlockedCount}',
+            label: 'Saídas forçadas do Feed hoje',
           ),
         ],
       ),

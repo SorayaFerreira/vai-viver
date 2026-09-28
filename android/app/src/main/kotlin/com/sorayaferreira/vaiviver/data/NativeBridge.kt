@@ -16,8 +16,8 @@ class NativeBridge(
                 result.success(
                     mapOf(
                         "reelsBlockEnabled" to s.reelsBlockEnabled,
-                        "scrollLimitEnabled" to s.scrollLimitEnabled,
-                        "scrollLimitMinutes" to s.scrollLimitMinutes
+                        "feedLimitEnabled" to s.feedLimitEnabled,
+                        "feedLimitMinutes" to s.feedLimitMinutes
                     )
                 )
             }
@@ -26,8 +26,8 @@ class NativeBridge(
                 settingsStore.setSettings(
                     AppSettings(
                         reelsBlockEnabled = args["reelsBlockEnabled"] as Boolean,
-                        scrollLimitEnabled = args["scrollLimitEnabled"] as Boolean,
-                        scrollLimitMinutes = (args["scrollLimitMinutes"] as Number).toInt()
+                        feedLimitEnabled = args["feedLimitEnabled"] as Boolean,
+                        feedLimitMinutes = (args["feedLimitMinutes"] as Number).toInt()
                     )
                 )
                 result.success(null)
@@ -37,7 +37,8 @@ class NativeBridge(
                 result.success(
                     mapOf(
                         "reelsBlockedCount" to stats.reelsBlockedCount,
-                        "scrollSecondsSaved" to stats.scrollSecondsSaved
+                        "feedSecondsToday" to stats.feedSecondsToday,
+                        "feedBlockedCount" to stats.feedBlockedCount
                     )
                 )
             }

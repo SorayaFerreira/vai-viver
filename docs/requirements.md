@@ -9,12 +9,12 @@
 |----|-----------|
 | RF01 | O sistema deve detectar quando a aba "Reels" do Instagram é aberta. |
 | RF02 | Ao detectar a aba Reels, o sistema deve acionar a ação Home do Android (`GLOBAL_ACTION_HOME`), retirando a usuária do Instagram. |
-| RF03 | O sistema deve medir o tempo acumulado de rolagem ativa (gestos de scroll) na aba Feed do Instagram. |
-| RF04 | O sistema deve permitir configurar o limite de tempo de rolagem ativa (padrão: 2 minutos). |
-| RF05 | Ao atingir o limite de rolagem configurado, o sistema deve acionar `GLOBAL_ACTION_HOME`. |
-| RF06 | O contador de rolagem ativa deve reiniciar a cada nova sessão do Instagram. |
-| RF07 | O sistema deve permitir habilitar/desabilitar independentemente o bloqueio de Reels e o limite de scroll. |
-| RF08 | O sistema deve exibir estatísticas diárias: quantidade de bloqueios de Reels e minutos de scroll evitados no dia corrente. |
+| RF03 | O sistema deve medir o tempo diário com a aba Início do Instagram na tela (Feed e telas abertas a partir dela), estando ou não rolando. |
+| RF04 | O sistema deve permitir configurar o limite diário de tempo no Feed (padrão: 20 minutos). |
+| RF05 | Ao atingir o limite diário, o sistema deve acionar `GLOBAL_ACTION_HOME` sempre que a aba Início estiver na tela — exceto nos primeiros 5 segundos após abrir o Instagram, para permitir ir a outra aba. |
+| RF06 | O contador de tempo no Feed deve zerar à meia-noite (horário do aparelho); sair e voltar ao Instagram não o zera. |
+| RF07 | O sistema deve permitir habilitar/desabilitar independentemente o bloqueio de Reels e o limite diário no Feed. |
+| RF08 | O sistema deve exibir estatísticas diárias: bloqueios de Reels, tempo no Feed e saídas forçadas do Feed no dia corrente. |
 | RF09 | O sistema deve guiar a usuária através de um fluxo de concessão de permissões (Acessibilidade, Otimização de Bateria, Autostart no MIUI). |
 | RF10 | O sistema deve permitir verificar e corrigir o status de cada permissão a qualquer momento, fora do fluxo inicial de onboarding. |
 | RF11 | O sistema deve restringir a leitura de conteúdo de tela exclusivamente ao pacote do Instagram (`com.instagram.android`). |
@@ -41,7 +41,6 @@
 | RL01 | Não é possível forçar o encerramento real do processo do Instagram sem root/Device Owner — a ação usada é sempre `GLOBAL_ACTION_HOME`. |
 | RL02 | A detecção de telas do Instagram depende de identificadores internos não documentados, que podem mudar em atualizações do Instagram e quebrar a detecção sem aviso. |
 | RL03 | Em dispositivos MIUI/HyperOS, a permissão de Acessibilidade pode ser desativada automaticamente após reinicialização do aparelho, exigindo reativação manual. |
-| RL04 | O reset "por sessão" do contador de scroll é contornável simplesmente saindo e reabrindo o Instagram — escolha consciente de simplicidade sobre rigor. |
 
 ## Fora de Escopo (nesta versão)
 

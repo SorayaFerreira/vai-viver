@@ -107,8 +107,7 @@ class _OnboardingFlowScreenState extends ConsumerState<OnboardingFlowScreen>
           ],
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) =>
-            ResponsiveBody(centerContent: true, child: Text('Erro: $err')),
+        error: (err, _) => ResponsiveBody(child: Text('Erro: $err')),
       ),
     );
   }

@@ -50,9 +50,8 @@ class AppStartupGate extends ConsumerWidget {
           complete ? const HomeScreen() : const OnboardingFlowScreen(),
       loading: () =>
           const AppScreen(body: Center(child: CircularProgressIndicator())),
-      error: (err, _) => AppScreen(
-        body: ResponsiveBody(centerContent: true, child: Text('Erro: $err')),
-      ),
+      error: (err, _) =>
+          AppScreen(body: ResponsiveBody(child: Text('Erro: $err'))),
     );
   }
 }

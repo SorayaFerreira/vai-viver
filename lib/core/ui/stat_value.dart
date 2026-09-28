@@ -30,19 +30,18 @@ class StatValue extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
+          // A Wrap, not a Row: with large fonts a long unit ("de 20 min")
+          // drops below the number instead of overflowing the card.
+          Wrap(
+            spacing: AppSpacing.xs,
+            crossAxisAlignment: WrapCrossAlignment.end,
             children: [
               GradientText(value, style: theme.textTheme.displaySmall),
-              if (unit != null) ...[
-                const SizedBox(width: AppSpacing.xs),
+              if (unit != null)
                 Text(
                   unit!,
                   style: theme.textTheme.titleMedium?.copyWith(color: muted),
                 ),
-              ],
             ],
           ),
           const SizedBox(height: AppSpacing.xs),

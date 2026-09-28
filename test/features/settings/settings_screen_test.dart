@@ -39,10 +39,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('scroll-limit-increment')));
+    await tester.tap(find.byKey(const Key('feed-limit-increment')));
     await tester.pumpAndSettle();
 
-    expect((await fakeRepo.getSettings()).scrollLimitMinutes, 3);
+    expect((await fakeRepo.getSettings()).feedLimitMinutes, 25);
   });
 
   group('layout fits the screen', () {

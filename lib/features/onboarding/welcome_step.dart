@@ -14,7 +14,6 @@ class WelcomeStep extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return ResponsiveBody(
-      centerContent: true,
       bottomAction: ElevatedButton(
         onPressed: onNext,
         child: const Text('Próximo'),

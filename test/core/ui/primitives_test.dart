@@ -122,18 +122,11 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _host(
-        const StatValue(
-          value: '5',
-          unit: 'min',
-          label: 'Minutos de scroll evitados hoje',
-        ),
+        const StatValue(value: '5', unit: 'min', label: 'Tempo no Feed hoje'),
       ),
     );
 
-    expect(
-      find.bySemanticsLabel('Minutos de scroll evitados hoje: 5 min'),
-      findsOneWidget,
-    );
+    expect(find.bySemanticsLabel('Tempo no Feed hoje: 5 min'), findsOneWidget);
     expect(
       find.descendant(
         of: find.byType(StatValue),
@@ -141,5 +134,27 @@ void main() {
       ),
       findsOneWidget,
     );
+  });
+
+  testWidgets('StatValue wraps a long unit instead of overflowing', (
+    tester,
+  ) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 2.0;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+    await tester.pumpWidget(
+      _host(
+        const SizedBox(
+          width: 240,
+          child: StatValue(
+            value: '128',
+            unit: 'de 20 min',
+            label: 'Tempo no Feed hoje',
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
   });
 }
