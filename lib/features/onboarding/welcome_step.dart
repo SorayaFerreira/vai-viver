@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_dimens.dart';
+import '../../core/ui/gradient_text.dart';
+import '../../core/ui/responsive_body.dart';
+import '../../core/ui/terminal_label.dart';
+
 class WelcomeStep extends StatelessWidget {
   const WelcomeStep({super.key, required this.onNext});
 
@@ -7,24 +12,32 @@ class WelcomeStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
+    final theme = Theme.of(context);
+    return ResponsiveBody(
+      centerContent: true,
+      bottomAction: ElevatedButton(
+        onPressed: onNext,
+        child: const Text('Próximo'),
+      ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          const TerminalLabel('init'),
+          const SizedBox(height: AppSpacing.lg),
+          GradientText(
             'Bem-vinda ao VaiViver',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: theme.textTheme.headlineMedium,
           ),
-          const SizedBox(height: 16),
-          const Text(
+          const SizedBox(height: AppSpacing.lg),
+          Text(
             'O VaiViver bloqueia a aba Reels do Instagram e limita quanto tempo '
             'você rola o Feed. Para isso, ele precisa de algumas permissões — '
             'vamos te guiar por cada uma.',
-            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
-          const SizedBox(height: 24),
-          ElevatedButton(onPressed: onNext, child: const Text('Próximo')),
         ],
       ),
     );

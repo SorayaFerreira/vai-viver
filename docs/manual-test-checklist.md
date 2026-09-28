@@ -85,3 +85,18 @@ Antes de considerar o MVP pronto, rode este roteiro no aparelho físico
     podem resetar o contador de scroll por engano. Não é uma falha de
     segurança, só faz o limite demorar mais que o configurado — reportar
     se isso acontecer na prática, para priorizar o conserto.
+
+## Visual e responsividade
+
+19. Com o celular no tema claro, percorra onboarding (limpe os dados do app),
+    Home, Configurações e Status das Permissões. Nenhum título pode ficar
+    embaixo do relógio/câmera, e "Próximo"/"Concluir" ficam sempre acima da
+    barra de navegação.
+20. Com o app aberto, troque o celular para o tema escuro. O app deve
+    acompanhar, com os textos legíveis sobre os cards de vidro.
+21. Em Configurações do MIUI > Tela > Tamanho do texto, escolha o maior. Refaça o
+    percurso do item 19: tudo deve ser alcançável rolando a tela, sem texto
+    cortado nem sobreposto.
+22. Se o launcher permitir, gire para paisagem (ou abra o VaiViver em tela
+    dividida). O conteúdo deve rolar e o botão fixo do onboarding continuar
+    visível.

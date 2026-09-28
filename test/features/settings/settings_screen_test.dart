@@ -5,6 +5,8 @@ import 'package:vaiviver/features/settings/settings_screen.dart';
 import 'package:vaiviver/features/settings/settings_view_model.dart';
 
 import '../../fakes/fake_settings_repository.dart';
+import '../../helpers/phone_viewport.dart';
+import '../../helpers/themed_app.dart';
 
 void main() {
   testWidgets('toggling reels-block switch saves through the repository', (
@@ -14,7 +16,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [settingsRepositoryProvider.overrideWithValue(fakeRepo)],
-        child: const MaterialApp(home: SettingsScreen(), routes: {}),
+        child: themedApp(home: const SettingsScreen()),
       ),
     );
     await tester.pumpAndSettle();
@@ -32,7 +34,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [settingsRepositoryProvider.overrideWithValue(fakeRepo)],
-        child: const MaterialApp(home: SettingsScreen()),
+        child: themedApp(home: const SettingsScreen()),
       ),
     );
     await tester.pumpAndSettle();
@@ -41,5 +43,26 @@ void main() {
     await tester.pumpAndSettle();
 
     expect((await fakeRepo.getSettings()).scrollLimitMinutes, 3);
+  });
+
+  group('layout fits the screen', () {
+    for (final viewport in phoneViewports) {
+      testWidgets('on $viewport', (tester) async {
+        applyViewport(tester, viewport);
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              settingsRepositoryProvider.overrideWithValue(
+                FakeSettingsRepository(),
+              ),
+            ],
+            child: themedApp(home: const SettingsScreen()),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await expectContentFitsScreen(tester, viewport);
+      });
+    }
   });
 }

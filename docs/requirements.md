@@ -31,6 +31,8 @@
 | RNF06 | Persistência local apenas (sem backend, sem sincronização em nuvem). |
 | RNF07 | O app não deve reter nem transmitir a nenhum servidor externo qualquer conteúdo lido da tela do Instagram — processamento 100% local/on-device. |
 | RNF08 | A interface do usuário deve ser em português (pt-BR). |
+| RNF09 | A interface segue um design system próprio (paleta, tipografia e componentes), com temas claro e escuro que acompanham a configuração do sistema; todo texto tem contraste mínimo WCAG AA (4,5:1). |
+| RNF10 | Todo texto e todo controle permanecem visíveis e alcançáveis (rolando, se preciso), nunca sob as barras do sistema, em telas a partir de 360×640 dp, com a fonte do sistema em até 2,0×, em retrato ou paisagem. |
 
 ## Restrições e Limitações Conhecidas (RL)
 

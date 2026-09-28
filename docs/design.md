@@ -256,3 +256,43 @@ para verificar isso de fato.
 - **Teste manual obrigatório no dispositivo real** para o fluxo fim-a-fim
   (abrir Instagram, entrar na aba Reels, rolar o Feed) — não dá pra automatizar
   isso de forma realista sem o Instagram instalado e um dispositivo físico.
+- **Layout (Flutter):** cada tela roda numa matriz de celulares
+  (`test/helpers/phone_viewport.dart`: 360×640 e 393×873 dp, fonte até 2,0×,
+  navegação por gestos e por 3 botões, paisagem) e o teste falha se algum texto
+  ficar sob as barras do sistema ou fora de alcance mesmo rolando.
+
+## 10. Design system (visual)
+
+**Referência:** o visual de krython.com: Satoshi com títulos finos, azul-ciano e
+índigo sobre fundo quase branco (ou quase preto azulado no tema escuro), cards de
+vidro fosco, brilhos ciano/violeta, gradientes e detalhes de terminal em fonte
+mono. Animações decorativas ficaram de fora de propósito, porque o app é sobre
+passar menos tempo olhando para a tela. Os temas claro e escuro seguem o sistema.
+
+**Camadas de tokens (só a primeira tem valores hex):**
+
+1. `AppPalette` (`lib/core/theme/app_palette.dart`): todas as cores cruas, uma
+   instância clara e uma escura. Um teste garante contraste WCAG AA (texto
+   ≥ 4,5:1, componentes ≥ 3:1). O ciano original do site (`#2B95D3`) não passa
+   em texto, por isso é usado só no gradiente e no brilho.
+2. `ColorScheme` + `VaiViverTokens` (`ThemeExtension`): o que cada cor significa.
+   O que o Material não tem (sucesso/aviso, vidro, brilho, grade, gradiente) fica
+   na extensão, que também faz a transição claro↔escuro via `lerp`.
+3. `AppTheme`: temas de componente (botão principal com gradiente via
+   `backgroundBuilder`, AppBar transparente etc.).
+
+**Tipografia:** Satoshi (títulos grandes 300, títulos de card 700, corpo 400) e
+JetBrains Mono nos rótulos estilo terminal. As fontes ficam fora do git: a
+licença da Satoshi (ITF FFL) permite embutir a fonte no app mas não redistribuir
+os arquivos, e o repositório é público. `tool/fetch_fonts.sh` baixa as duas.
+
+**Componentes (`lib/core/ui/`):** `AppScreen` (fundo ambiente + Scaffold
+transparente + AppBar), `ResponsiveBody` (área segura + scroll + largura máx.
+560dp + ação fixa no rodapé), `GlassCard`, `TerminalLabel`, `StatusPill`,
+`GradientText` e `StatValue`. Em `features/permissions/` fica o `PermissionCard`.
+
+**Regra de responsividade:** toda tela é `AppScreen` + `ResponsiveBody`, e nenhum
+conteúdo fica em `Column` de altura fixa sem scroll. O app é edge-to-edge (o
+Android desenha atrás das barras do sistema), então a área segura é obrigatória.
+Foi a falta dela, junto com passos do onboarding que não rolavam, que fez as
+explicações das permissões passarem da tela.

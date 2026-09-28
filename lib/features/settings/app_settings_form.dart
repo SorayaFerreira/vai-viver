@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/theme/app_dimens.dart';
+import '../../core/theme/app_typography.dart';
 import 'settings_view_model.dart';
 
 class AppSettingsForm extends ConsumerWidget {
@@ -12,7 +14,7 @@ class AppSettingsForm extends ConsumerWidget {
 
     return settingsAsync.when(
       data: (settings) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SwitchListTile(
             key: const Key('reels-block-switch'),
@@ -30,43 +32,82 @@ class AppSettingsForm extends ConsumerWidget {
                 .read(settingsViewModelProvider.notifier)
                 .setScrollLimitEnabled(value),
           ),
-          ListTile(
-            title: const Text('Limite de scroll (minutos)'),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  key: const Key('scroll-limit-decrement'),
-                  icon: const Icon(Icons.remove),
-                  onPressed:
-                      settings.scrollLimitEnabled &&
-                          settings.scrollLimitMinutes > 1
-                      ? () => ref
-                            .read(settingsViewModelProvider.notifier)
-                            .setScrollLimitMinutes(
-                              settings.scrollLimitMinutes - 1,
-                            )
-                      : null,
-                ),
-                Text('${settings.scrollLimitMinutes}'),
-                IconButton(
-                  key: const Key('scroll-limit-increment'),
-                  icon: const Icon(Icons.add),
-                  onPressed: settings.scrollLimitEnabled
-                      ? () => ref
-                            .read(settingsViewModelProvider.notifier)
-                            .setScrollLimitMinutes(
-                              settings.scrollLimitMinutes + 1,
-                            )
-                      : null,
-                ),
-              ],
-            ),
+          _MinutesStepper(
+            minutes: settings.scrollLimitMinutes,
+            enabled: settings.scrollLimitEnabled,
+            onChanged: (minutes) => ref
+                .read(settingsViewModelProvider.notifier)
+                .setScrollLimitMinutes(minutes),
           ),
         ],
       ),
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, _) => Text('Erro ao carregar configurações: $err'),
+    );
+  }
+}
+
+/// "Limite de scroll (minutos)" with −/+ buttons. A Row with an Expanded
+/// label (not a ListTile trailing) so the label wraps under large fonts
+/// instead of fighting the buttons for width.
+class _MinutesStepper extends StatelessWidget {
+  const _MinutesStepper({
+    required this.minutes,
+    required this.enabled,
+    required this.onChanged,
+  });
+
+  final int minutes;
+  final bool enabled;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.sm,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              'Limite de scroll (minutos)',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: enabled
+                    ? null
+                    : scheme.onSurface.withValues(alpha: 0.38),
+              ),
+            ),
+          ),
+          IconButton.outlined(
+            key: const Key('scroll-limit-decrement'),
+            icon: const Icon(Icons.remove),
+            onPressed: enabled && minutes > 1
+                ? () => onChanged(minutes - 1)
+                : null,
+          ),
+          ConstrainedBox(
+            constraints: const BoxConstraints(minWidth: 48),
+            child: Text(
+              '$minutes',
+              textAlign: TextAlign.center,
+              style: AppTypography.mono.copyWith(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: scheme.primary,
+              ),
+            ),
+          ),
+          IconButton.outlined(
+            key: const Key('scroll-limit-increment'),
+            icon: const Icon(Icons.add),
+            onPressed: enabled ? () => onChanged(minutes + 1) : null,
+          ),
+        ],
+      ),
     );
   }
 }

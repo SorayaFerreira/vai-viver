@@ -13,6 +13,8 @@ import 'package:vaiviver/features/stats/stats_view_model.dart';
 import '../../fakes/fake_permissions_repository.dart';
 import '../../fakes/fake_settings_repository.dart';
 import '../../fakes/fake_stats_repository.dart';
+import '../../helpers/phone_viewport.dart';
+import '../../helpers/themed_app.dart';
 
 void main() {
   testWidgets('walks through every step to the Home screen', (tester) async {
@@ -26,7 +28,7 @@ void main() {
           ),
           statsRepositoryProvider.overrideWithValue(FakeStatsRepository()),
         ],
-        child: const MaterialApp(home: OnboardingFlowScreen()),
+        child: themedApp(home: const OnboardingFlowScreen()),
       ),
     );
     await tester.pumpAndSettle();
@@ -106,6 +108,37 @@ void main() {
       expect(find.text('Concluir'), findsOneWidget);
     },
   );
+
+  // Regression for the reported bug: permission explanations ran off the
+  // screen (under the status bar, and past the bottom with large fonts).
+  group('layout fits the screen', () {
+    for (final viewport in phoneViewports) {
+      testWidgets('every step on $viewport', (tester) async {
+        applyViewport(tester, viewport);
+        await tester.pumpWidget(
+          _wrap(
+            FakePermissionsRepository(
+              status: const PermissionStatus(
+                accessibilityEnabled: false,
+                batteryOptimizationIgnored: false,
+                autostartAcknowledged: false,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final pages = tester
+            .widget<PageView>(find.byType(PageView))
+            .controller!;
+        for (var page = 0; page < 5; page++) {
+          pages.jumpToPage(page);
+          await tester.pumpAndSettle();
+          await expectContentFitsScreen(tester, viewport);
+        }
+      });
+    }
+  });
 }
 
 Widget _wrap(FakePermissionsRepository permissionsRepo) {
@@ -115,6 +148,6 @@ Widget _wrap(FakePermissionsRepository permissionsRepo) {
       settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
       statsRepositoryProvider.overrideWithValue(FakeStatsRepository()),
     ],
-    child: const MaterialApp(home: OnboardingFlowScreen()),
+    child: themedApp(home: const OnboardingFlowScreen()),
   );
 }
