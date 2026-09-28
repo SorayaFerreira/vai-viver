@@ -7,13 +7,17 @@ class ReelsTabRule(private val settingsStore: SettingsStore) : DetectionRule {
     override fun evaluate(root: ScreenNode, eventType: Int): RuleResult {
         if (!settingsStore.getSettings().reelsBlockEnabled) return RuleResult.NoAction
 
+        // The bottom nav renders every tab's button on every screen; only the active
+        // tab's button is selected. The marker must be on the selected node itself.
         val onReelsTab = root.findFirst { node ->
-            REELS_TAB_VIEW_ID_KEYWORDS.any { keyword ->
-                node.viewId?.contains(keyword, ignoreCase = true) == true
-            } ||
-                REELS_TAB_CONTENT_DESCRIPTIONS.any { desc ->
-                    node.contentDescription?.equals(desc, ignoreCase = true) == true
-                }
+            node.isSelected && (
+                REELS_TAB_VIEW_ID_KEYWORDS.any { keyword ->
+                    node.viewId?.contains(keyword, ignoreCase = true) == true
+                } ||
+                    REELS_TAB_CONTENT_DESCRIPTIONS.any { desc ->
+                        node.contentDescription?.equals(desc, ignoreCase = true) == true
+                    }
+                )
         } != null
 
         return if (onReelsTab) RuleResult.Block(BlockReason.REELS_TAB) else RuleResult.NoAction

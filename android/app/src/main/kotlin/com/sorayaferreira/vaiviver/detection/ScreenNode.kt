@@ -4,6 +4,7 @@ data class ScreenNode(
     val viewId: String?,
     val contentDescription: String?,
     val className: String?,
+    val isSelected: Boolean = false,
     val children: List<ScreenNode> = emptyList()
 ) {
     fun findFirst(predicate: (ScreenNode) -> Boolean): ScreenNode? {

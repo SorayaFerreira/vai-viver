@@ -14,6 +14,7 @@ fun AccessibilityNodeInfo.toScreenNode(): ScreenNode {
         viewId = viewIdResourceName,
         contentDescription = contentDescription?.toString(),
         className = className?.toString(),
+        isSelected = isSelected,
         children = children
     )
 }

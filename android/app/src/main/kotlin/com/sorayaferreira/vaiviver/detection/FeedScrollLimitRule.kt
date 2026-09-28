@@ -2,20 +2,24 @@ package com.sorayaferreira.vaiviver.detection
 
 import android.view.accessibility.AccessibilityEvent
 import com.sorayaferreira.vaiviver.data.SettingsStore
-import com.sorayaferreira.vaiviver.data.StatsStore
 
 class FeedScrollLimitRule(
     private val settingsStore: SettingsStore,
-    private val statsStore: StatsStore,
     private val accumulator: ScrollActivityAccumulator = ScrollActivityAccumulator()
 ) : DetectionRule {
 
     override fun evaluate(root: ScreenNode, eventType: Int): RuleResult {
         val settings = settingsStore.getSettings()
-        if (!settings.scrollLimitEnabled) return RuleResult.NoAction
+        if (!settings.scrollLimitEnabled) {
+            // Drop any partial progress so it can't carry over once re-enabled.
+            accumulator.reset()
+            return RuleResult.NoAction
+        }
 
+        // The bottom nav renders every tab's button on every screen; only the active
+        // tab's button is selected. The marker must be on the selected node itself.
         val onFeedTab = root.findFirst { node ->
-            FEED_TAB_VIEW_ID_KEYWORDS.any { keyword ->
+            node.isSelected && FEED_TAB_VIEW_ID_KEYWORDS.any { keyword ->
                 node.viewId?.contains(keyword, ignoreCase = true) == true
             }
         } != null
