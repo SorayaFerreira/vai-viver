@@ -9,7 +9,9 @@ class MethodChannelSettingsRepository implements SettingsRepository {
 
   @override
   Future<AppSettings> getSettings() async {
-    final map = await _bridge.channel.invokeMapMethod<String, Object?>('getSettings');
+    final map = await _bridge.channel.invokeMapMethod<String, Object?>(
+      'getSettings',
+    );
     return AppSettings(
       reelsBlockEnabled: map!['reelsBlockEnabled'] as bool,
       scrollLimitEnabled: map['scrollLimitEnabled'] as bool,

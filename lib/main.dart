@@ -40,8 +40,10 @@ class AppStartupGate extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final onboardingComplete = ref.watch(onboardingCompleteProvider);
     return onboardingComplete.when(
-      data: (complete) => complete ? const HomeScreen() : const OnboardingFlowScreen(),
-      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      data: (complete) =>
+          complete ? const HomeScreen() : const OnboardingFlowScreen(),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (err, _) => Scaffold(body: Center(child: Text('Erro: $err'))),
     );
   }

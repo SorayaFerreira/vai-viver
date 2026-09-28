@@ -8,7 +8,9 @@ import 'package:vaiviver/features/permissions/permissions_view_model.dart';
 import '../../fakes/fake_permissions_repository.dart';
 
 void main() {
-  testWidgets('shows granted/pending state for each permission', (tester) async {
+  testWidgets('shows granted/pending state for each permission', (
+    tester,
+  ) async {
     final fakeRepo = FakePermissionsRepository(
       status: const PermissionStatus(
         accessibilityEnabled: true,

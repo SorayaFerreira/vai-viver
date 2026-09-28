@@ -10,5 +10,7 @@ class PermissionStatus {
   final bool autostartAcknowledged;
 
   bool get allGranted =>
-      accessibilityEnabled && batteryOptimizationIgnored && autostartAcknowledged;
+      accessibilityEnabled &&
+      batteryOptimizationIgnored &&
+      autostartAcknowledged;
 }

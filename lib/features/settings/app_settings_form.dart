@@ -18,15 +18,17 @@ class AppSettingsForm extends ConsumerWidget {
             key: const Key('reels-block-switch'),
             title: const Text('Bloquear aba Reels'),
             value: settings.reelsBlockEnabled,
-            onChanged: (value) =>
-                ref.read(settingsViewModelProvider.notifier).setReelsBlockEnabled(value),
+            onChanged: (value) => ref
+                .read(settingsViewModelProvider.notifier)
+                .setReelsBlockEnabled(value),
           ),
           SwitchListTile(
             key: const Key('scroll-limit-switch'),
             title: const Text('Limite de scroll no Feed'),
             value: settings.scrollLimitEnabled,
-            onChanged: (value) =>
-                ref.read(settingsViewModelProvider.notifier).setScrollLimitEnabled(value),
+            onChanged: (value) => ref
+                .read(settingsViewModelProvider.notifier)
+                .setScrollLimitEnabled(value),
           ),
           ListTile(
             title: const Text('Limite de scroll (minutos)'),
@@ -36,10 +38,14 @@ class AppSettingsForm extends ConsumerWidget {
                 IconButton(
                   key: const Key('scroll-limit-decrement'),
                   icon: const Icon(Icons.remove),
-                  onPressed: settings.scrollLimitEnabled && settings.scrollLimitMinutes > 1
+                  onPressed:
+                      settings.scrollLimitEnabled &&
+                          settings.scrollLimitMinutes > 1
                       ? () => ref
-                          .read(settingsViewModelProvider.notifier)
-                          .setScrollLimitMinutes(settings.scrollLimitMinutes - 1)
+                            .read(settingsViewModelProvider.notifier)
+                            .setScrollLimitMinutes(
+                              settings.scrollLimitMinutes - 1,
+                            )
                       : null,
                 ),
                 Text('${settings.scrollLimitMinutes}'),
@@ -48,8 +54,10 @@ class AppSettingsForm extends ConsumerWidget {
                   icon: const Icon(Icons.add),
                   onPressed: settings.scrollLimitEnabled
                       ? () => ref
-                          .read(settingsViewModelProvider.notifier)
-                          .setScrollLimitMinutes(settings.scrollLimitMinutes + 1)
+                            .read(settingsViewModelProvider.notifier)
+                            .setScrollLimitMinutes(
+                              settings.scrollLimitMinutes + 1,
+                            )
                       : null,
                 ),
               ],

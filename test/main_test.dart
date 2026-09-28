@@ -10,14 +10,18 @@ import 'fakes/fake_settings_repository.dart';
 import 'fakes/fake_stats_repository.dart';
 
 void main() {
-  testWidgets('shows onboarding when it has not been completed', (tester) async {
+  testWidgets('shows onboarding when it has not been completed', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           permissionsRepositoryProvider.overrideWithValue(
             FakePermissionsRepository(onboardingComplete: false),
           ),
-          settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
+          settingsRepositoryProvider.overrideWithValue(
+            FakeSettingsRepository(),
+          ),
           statsRepositoryProvider.overrideWithValue(FakeStatsRepository()),
         ],
         child: const VaiViverApp(),
@@ -28,14 +32,18 @@ void main() {
     expect(find.text('Bem-vinda ao VaiViver'), findsOneWidget);
   });
 
-  testWidgets('shows Home when onboarding was already completed', (tester) async {
+  testWidgets('shows Home when onboarding was already completed', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           permissionsRepositoryProvider.overrideWithValue(
             FakePermissionsRepository(onboardingComplete: true),
           ),
-          settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
+          settingsRepositoryProvider.overrideWithValue(
+            FakeSettingsRepository(),
+          ),
           statsRepositoryProvider.overrideWithValue(FakeStatsRepository()),
         ],
         child: const VaiViverApp(),

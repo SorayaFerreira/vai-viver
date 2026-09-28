@@ -12,16 +12,23 @@ class BatteryOptimizationStatusTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
-      leading: Icon(status.batteryOptimizationIgnored ? Icons.check_circle : Icons.error_outline),
+      leading: Icon(
+        status.batteryOptimizationIgnored
+            ? Icons.check_circle
+            : Icons.error_outline,
+      ),
       title: Text(
         'Otimização de bateria: ${status.batteryOptimizationIgnored ? "isenta" : "pendente"}',
       ),
-      subtitle: const Text('Sem isso o Android pode encerrar o VaiViver em segundo plano'),
+      subtitle: const Text(
+        'Sem isso o Android pode encerrar o VaiViver em segundo plano',
+      ),
       trailing: status.batteryOptimizationIgnored
           ? null
           : TextButton(
-              onPressed: () =>
-                  ref.read(permissionsViewModelProvider.notifier).openBatteryOptimizationSettings(),
+              onPressed: () => ref
+                  .read(permissionsViewModelProvider.notifier)
+                  .openBatteryOptimizationSettings(),
               child: const Text('Abrir'),
             ),
     );

@@ -12,7 +12,10 @@ class WelcomeStep extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text('Bem-vinda ao VaiViver', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          const Text(
+            'Bem-vinda ao VaiViver',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 16),
           const Text(
             'O VaiViver bloqueia a aba Reels do Instagram e limita quanto tempo '

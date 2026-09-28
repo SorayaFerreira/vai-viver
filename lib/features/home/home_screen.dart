@@ -13,7 +13,8 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObserver {
+class _HomeScreenState extends ConsumerState<HomeScreen>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -85,7 +86,9 @@ class _PermissionsStatusCard extends StatelessWidget {
           color: allGranted ? Colors.green : Colors.orange,
         ),
         title: Text(allGranted ? 'Proteções ativas' : 'Ação necessária'),
-        subtitle: allGranted ? null : const Text('Verifique as permissões pendentes'),
+        subtitle: allGranted
+            ? null
+            : const Text('Verifique as permissões pendentes'),
         onTap: () => Navigator.of(context).pushNamed('/permissions'),
       ),
     );

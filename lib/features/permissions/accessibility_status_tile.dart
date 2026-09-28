@@ -12,13 +12,21 @@ class AccessibilityStatusTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
-      leading: Icon(status.accessibilityEnabled ? Icons.check_circle : Icons.error_outline),
-      title: Text('Acessibilidade: ${status.accessibilityEnabled ? "ativada" : "pendente"}'),
-      subtitle: const Text('Necessária para detectar Reels e medir a rolagem do Feed'),
+      leading: Icon(
+        status.accessibilityEnabled ? Icons.check_circle : Icons.error_outline,
+      ),
+      title: Text(
+        'Acessibilidade: ${status.accessibilityEnabled ? "ativada" : "pendente"}',
+      ),
+      subtitle: const Text(
+        'Necessária para detectar Reels e medir a rolagem do Feed',
+      ),
       trailing: status.accessibilityEnabled
           ? null
           : TextButton(
-              onPressed: () => ref.read(permissionsViewModelProvider.notifier).openAccessibilitySettings(),
+              onPressed: () => ref
+                  .read(permissionsViewModelProvider.notifier)
+                  .openAccessibilitySettings(),
               child: const Text('Abrir'),
             ),
     );

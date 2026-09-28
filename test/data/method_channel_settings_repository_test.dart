@@ -16,14 +16,16 @@ void main() {
   test('getSettings calls the native method and parses the response', () async {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
-      expect(call.method, 'getSettings');
-      return {
-        'reelsBlockEnabled': true,
-        'scrollLimitEnabled': false,
-        'scrollLimitMinutes': 3,
-      };
-    });
-    final repository = MethodChannelSettingsRepository(NativeBridge(channel: channel));
+          expect(call.method, 'getSettings');
+          return {
+            'reelsBlockEnabled': true,
+            'scrollLimitEnabled': false,
+            'scrollLimitMinutes': 3,
+          };
+        });
+    final repository = MethodChannelSettingsRepository(
+      NativeBridge(channel: channel),
+    );
 
     final settings = await repository.getSettings();
 
@@ -36,13 +38,19 @@ void main() {
     Map<Object?, Object?>? receivedArgs;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
-      receivedArgs = call.arguments as Map<Object?, Object?>;
-      return null;
-    });
-    final repository = MethodChannelSettingsRepository(NativeBridge(channel: channel));
+          receivedArgs = call.arguments as Map<Object?, Object?>;
+          return null;
+        });
+    final repository = MethodChannelSettingsRepository(
+      NativeBridge(channel: channel),
+    );
 
     await repository.saveSettings(
-      const AppSettings(reelsBlockEnabled: false, scrollLimitEnabled: true, scrollLimitMinutes: 9),
+      const AppSettings(
+        reelsBlockEnabled: false,
+        scrollLimitEnabled: true,
+        scrollLimitMinutes: 9,
+      ),
     );
 
     expect(receivedArgs!['scrollLimitMinutes'], 9);
@@ -52,9 +60,11 @@ void main() {
   test('a platform failure propagates as a PlatformException', () async {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
-      throw PlatformException(code: 'unavailable');
-    });
-    final repository = MethodChannelSettingsRepository(NativeBridge(channel: channel));
+          throw PlatformException(code: 'unavailable');
+        });
+    final repository = MethodChannelSettingsRepository(
+      NativeBridge(channel: channel),
+    );
 
     expect(() => repository.getSettings(), throwsA(isA<PlatformException>()));
   });

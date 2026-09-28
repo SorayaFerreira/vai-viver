@@ -21,7 +21,9 @@ class AutostartAckTile extends ConsumerWidget {
       ),
       onChanged: (value) {
         if (value == true) {
-          ref.read(permissionsViewModelProvider.notifier).acknowledgeAutostart();
+          ref
+              .read(permissionsViewModelProvider.notifier)
+              .acknowledgeAutostart();
         }
       },
     );

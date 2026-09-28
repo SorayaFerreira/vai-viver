@@ -24,7 +24,8 @@ class PermissionsScreen extends ConsumerWidget {
           ],
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('Erro ao carregar permissões: $err')),
+        error: (err, _) =>
+            Center(child: Text('Erro ao carregar permissões: $err')),
       ),
     );
   }

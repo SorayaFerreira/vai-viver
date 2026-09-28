@@ -9,7 +9,9 @@ class MethodChannelStatsRepository implements StatsRepository {
 
   @override
   Future<DailyStats> getTodayStats() async {
-    final map = await _bridge.channel.invokeMapMethod<String, Object?>('getTodayStats');
+    final map = await _bridge.channel.invokeMapMethod<String, Object?>(
+      'getTodayStats',
+    );
     return DailyStats(
       reelsBlockedCount: map!['reelsBlockedCount'] as int,
       scrollSecondsSaved: map['scrollSecondsSaved'] as int,
