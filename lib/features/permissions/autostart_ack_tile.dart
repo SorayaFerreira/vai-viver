@@ -18,7 +18,7 @@ class AutostartAckTile extends ConsumerWidget {
       grantedLabel: 'confirmado',
       explanation:
           'Sem o Autostart, o MIUI pode não religar o VaiViver depois que o '
-          'celular reinicia. Não dá pra verificar isso automaticamente — '
+          'celular reinicia. Não dá pra verificar isso automaticamente, '
           'ative em:',
       detail:
           'Configurações > Apps > Gerenciar apps > VaiViver > Autostart\n'

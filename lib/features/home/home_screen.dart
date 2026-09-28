@@ -155,9 +155,9 @@ class _StatsCard extends StatelessWidget {
     final feedMinutes = stats.feedSecondsToday ~/ 60;
     final limit = feedLimit;
     return GlassCard(
-      child: Wrap(
-        spacing: AppSpacing.xl,
-        runSpacing: AppSpacing.lg,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: AppSpacing.lg,
         children: [
           StatValue(
             value: '$feedMinutes',

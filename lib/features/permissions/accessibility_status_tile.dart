@@ -12,15 +12,21 @@ class AccessibilityStatusTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final stalled = status.accessibilityStalled;
+    final granted = status.accessibilityEnabled && !stalled;
     return PermissionCard(
       title: 'Acessibilidade',
-      granted: status.accessibilityEnabled,
+      granted: granted,
       grantedLabel: 'ativada',
-      explanation:
-          'O VaiViver precisa ler a tela do Instagram pra saber quando você '
-          'está na aba Reels ou rolando o Feed — ele nunca lê nada de outros '
-          'apps.',
-      action: status.accessibilityEnabled
+      pendingLabel: stalled ? 'parada' : PermissionCard.defaultPendingLabel,
+      explanation: stalled
+          ? 'A permissão está ligada, mas o Android parou o serviço do '
+                'VaiViver (acontece ao fechar o app nos recentes ou depois de '
+                'atualizá-lo). Desligue e ligue o VaiViver em Acessibilidade.'
+          : 'O VaiViver precisa ler a tela do Instagram pra saber quando você '
+                'está na aba Reels ou rolando o Feed. Ele nunca lê nada de '
+                'outros apps.',
+      action: granted
           ? null
           : FilledButton.tonal(
               onPressed: () => ref

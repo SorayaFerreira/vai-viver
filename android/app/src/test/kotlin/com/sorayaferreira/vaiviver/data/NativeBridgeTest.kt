@@ -70,13 +70,18 @@ class NativeBridgeTest {
 
     @Test
     fun `getPermissionStatus reflects the permissions checker`() {
-        val checker = FakePermissionsChecker(accessibilityEnabled = true, batteryOptimizationIgnored = false)
+        val checker = FakePermissionsChecker(
+            accessibilityEnabled = true,
+            accessibilityRunning = false,
+            batteryOptimizationIgnored = false
+        )
         val result = RecordingResult()
 
         bridge(permissionsChecker = checker).onMethodCall(MethodCall("getPermissionStatus", null), result)
 
         val map = result.success as Map<*, *>
         assertEquals(true, map["accessibilityEnabled"])
+        assertEquals(false, map["accessibilityRunning"])
         assertEquals(false, map["batteryOptimizationIgnored"])
     }
 

@@ -87,6 +87,31 @@ void main() {
     expect(fakeRepo.openAccessibilitySettingsCallCount, 1);
   });
 
+  testWidgets('accessibility enabled but not running shows as stalled', (
+    tester,
+  ) async {
+    final fakeRepo = FakePermissionsRepository(
+      status: const PermissionStatus(
+        accessibilityEnabled: true,
+        accessibilityRunning: false,
+        batteryOptimizationIgnored: true,
+        autostartAcknowledged: true,
+      ),
+    );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [permissionsRepositoryProvider.overrideWithValue(fakeRepo)],
+        child: themedApp(home: const PermissionsScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.bySemanticsLabel('Acessibilidade: parada'), findsOneWidget);
+    await tester.tap(find.text('Abrir configurações'));
+    await tester.pumpAndSettle();
+    expect(fakeRepo.openAccessibilitySettingsCallCount, 1);
+  });
+
   group('layout fits the screen', () {
     for (final viewport in phoneViewports) {
       testWidgets('with every permission pending on $viewport', (tester) async {

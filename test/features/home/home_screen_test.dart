@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:vaiviver/core/ui/stat_value.dart';
 import 'package:vaiviver/domain/models/daily_stats.dart';
 import 'package:vaiviver/domain/models/permission_status.dart';
 import 'package:vaiviver/features/home/home_screen.dart';
@@ -172,6 +173,32 @@ void main() {
     );
     expect(find.text('Proteções ativas'), findsOneWidget);
     expect(find.text('Ação necessária'), findsNothing);
+  });
+
+  testWidgets('stats are listed one below the other, even with room to spare', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const HomeScreen(),
+        overrides: [
+          statsRepositoryProvider.overrideWithValue(FakeStatsRepository()),
+          permissionsRepositoryProvider.overrideWithValue(
+            FakePermissionsRepository(),
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final tops = find
+        .byType(StatValue)
+        .evaluate()
+        .map((e) => tester.getTopLeft(find.byWidget(e.widget)))
+        .toList();
+    expect(tops, hasLength(3));
+    expect(tops.map((o) => o.dx).toSet(), hasLength(1)); // same column
+    expect(tops[0].dy < tops[1].dy && tops[1].dy < tops[2].dy, isTrue);
   });
 
   group('layout fits the screen', () {

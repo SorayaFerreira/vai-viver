@@ -46,6 +46,7 @@ class NativeBridge(
                 result.success(
                     mapOf(
                         "accessibilityEnabled" to permissionsChecker.isAccessibilityServiceEnabled(),
+                        "accessibilityRunning" to permissionsChecker.isAccessibilityServiceRunning(),
                         "batteryOptimizationIgnored" to permissionsChecker.isIgnoringBatteryOptimizations(),
                         "autostartAcknowledged" to permissionsChecker.isAutostartAcknowledged()
                     )

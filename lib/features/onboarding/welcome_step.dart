@@ -31,8 +31,8 @@ class WelcomeStep extends StatelessWidget {
           const SizedBox(height: AppSpacing.lg),
           Text(
             'O VaiViver bloqueia a aba Reels do Instagram e limita quanto tempo '
-            'você rola o Feed. Para isso, ele precisa de algumas permissões — '
-            'vamos te guiar por cada uma.',
+            'você rola o Feed. Para isso, ele precisa de algumas permissões.\n'
+            'Vamos te guiar por cada uma! 💫',
             style: theme.textTheme.bodyLarge?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),

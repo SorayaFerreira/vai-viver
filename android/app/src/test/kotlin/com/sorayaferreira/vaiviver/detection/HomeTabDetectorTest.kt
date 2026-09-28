@@ -39,4 +39,39 @@ class HomeTabDetectorTest {
             )
         )
     }
+
+    // Shape seen on the device (log of 2026-09-28): the selected node is the
+    // generic child icon; the button that identifies the tab is its parent.
+    private fun tab(viewId: String, desc: String?, iconSelected: Boolean) = ScreenNode(
+        viewId, desc, "FrameLayout",
+        children = listOf(
+            ScreenNode("com.instagram.android:id/tab_icon", null, "ImageView", isSelected = iconSelected)
+        )
+    )
+
+    @Test
+    fun `home button whose child icon is selected is the home tab`() {
+        val screen = ScreenNode(
+            "root", null, "FrameLayout",
+            children = listOf(
+                tab("com.instagram.android:id/feed_tab", null, iconSelected = true),
+                tab("com.instagram.android:id/clips_tab", null, iconSelected = false)
+            )
+        )
+
+        assertTrue(HomeTabDetector.isHomeTabSelected(screen))
+    }
+
+    @Test
+    fun `a selected icon under another tab does not count as the home tab`() {
+        val screen = ScreenNode(
+            "root", null, "FrameLayout",
+            children = listOf(
+                tab("com.instagram.android:id/feed_tab", "Página inicial", iconSelected = false),
+                tab("com.instagram.android:id/profile_tab", "Perfil", iconSelected = true)
+            )
+        )
+
+        assertFalse(HomeTabDetector.isHomeTabSelected(screen))
+    }
 }

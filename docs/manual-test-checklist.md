@@ -73,6 +73,11 @@ Antes de considerar o MVP pronto, rode este roteiro no aparelho físico
     hoje" devem refletir
     o que aconteceu.
 
+16b. Feche o VaiViver deslizando-o para fora dos apps recentes e abra de novo
+    logo em seguida: se o Android ainda não religou o serviço, a Acessibilidade
+    aparece como "parada" (e a Home, "Ação necessária"); em alguns segundos,
+    ao voltar para o app, deve voltar a "ativada".
+
 ## Contagem de eventos
 
 17. Teste a contagem de bloqueios de Reels: faça 3–5 toques rápidos e

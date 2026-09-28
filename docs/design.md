@@ -193,7 +193,12 @@ navegação inferior — poucas telas, então `Navigator.push` simples já resol
 
 3. **Status das Permissões** (reaproveita os passos 2-4 do onboarding, revisitável
    a qualquer momento):
-   - Acessibilidade: status + botão de correção.
+   - Acessibilidade: status + botão de correção. Três estados: "ativada",
+     "pendente" (desligada) e "parada" — ligada nas configurações, mas o
+     Android não está com o serviço conectado (o que ele mostra como
+     "malfunctioning", p.ex. depois de o MIUI matar o app ao fechá-lo nos
+     recentes). A verificação usa a lista de serviços conectados do
+     `AccessibilityManager`, não só a configuração.
    - Otimização de bateria: status + botão de correção.
    - Autostart (MIUI): instruções + checkbox "Já fiz isso".
 

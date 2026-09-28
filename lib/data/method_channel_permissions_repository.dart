@@ -14,6 +14,7 @@ class MethodChannelPermissionsRepository implements PermissionsRepository {
     );
     return PermissionStatus(
       accessibilityEnabled: map!['accessibilityEnabled'] as bool,
+      accessibilityRunning: map['accessibilityRunning'] as bool,
       batteryOptimizationIgnored: map['batteryOptimizationIgnored'] as bool,
       autostartAcknowledged: map['autostartAcknowledged'] as bool,
     );

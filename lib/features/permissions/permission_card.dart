@@ -16,15 +16,19 @@ class PermissionCard extends StatelessWidget {
     required this.granted,
     required this.grantedLabel,
     required this.explanation,
+    this.pendingLabel = defaultPendingLabel,
     this.detail,
     this.action,
   });
 
-  static const pendingLabel = 'pendente';
+  static const defaultPendingLabel = 'pendente';
 
   final String title;
   final bool granted;
   final String grantedLabel;
+
+  /// Pill text when not granted (e.g. 'parada' for a stalled service).
+  final String pendingLabel;
   final String explanation;
   final String? detail;
   final Widget? action;
