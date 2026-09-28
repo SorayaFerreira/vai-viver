@@ -6,10 +6,11 @@ void main() {
   test('copyWith overrides only the given fields', () {
     const original = AppSettings.defaults;
 
-    final updated = original.copyWith(scrollLimitMinutes: 5);
+    final updated = original.copyWith(feedLimitMinutes: 5);
 
-    expect(updated.scrollLimitMinutes, 5);
+    expect(updated.feedLimitMinutes, 5);
     expect(updated.reelsBlockEnabled, original.reelsBlockEnabled);
-    expect(updated.scrollLimitEnabled, original.scrollLimitEnabled);
+    expect(updated.feedLimitEnabled, original.feedLimitEnabled);
+    expect(AppSettings.defaults.feedLimitMinutes, 20);
   });
 }

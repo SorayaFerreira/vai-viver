@@ -1,11 +1,17 @@
 class DailyStats {
   const DailyStats({
     required this.reelsBlockedCount,
-    required this.scrollSecondsSaved,
+    required this.feedSecondsToday,
+    required this.feedBlockedCount,
   });
 
   final int reelsBlockedCount;
-  final int scrollSecondsSaved;
+  final int feedSecondsToday;
+  final int feedBlockedCount;
 
-  static const empty = DailyStats(reelsBlockedCount: 0, scrollSecondsSaved: 0);
+  static const empty = DailyStats(
+    reelsBlockedCount: 0,
+    feedSecondsToday: 0,
+    feedBlockedCount: 0,
+  );
 }

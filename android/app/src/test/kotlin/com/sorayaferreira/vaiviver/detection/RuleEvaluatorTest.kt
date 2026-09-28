@@ -14,7 +14,7 @@ class RuleEvaluatorTest {
             var called = false
             override fun evaluate(root: ScreenNode, eventType: Int): RuleResult {
                 called = true
-                return RuleResult.Block(BlockReason.SCROLL_LIMIT)
+                return RuleResult.Block(BlockReason.FEED_TIME_LIMIT)
             }
         }
 

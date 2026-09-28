@@ -18,6 +18,7 @@ void main() {
           expect(call.method, 'getPermissionStatus');
           return {
             'accessibilityEnabled': true,
+            'accessibilityRunning': false,
             'batteryOptimizationIgnored': false,
             'autostartAcknowledged': true,
           };
@@ -29,6 +30,7 @@ void main() {
     final status = await repository.getStatus();
 
     expect(status.accessibilityEnabled, true);
+    expect(status.accessibilityRunning, false);
     expect(status.batteryOptimizationIgnored, false);
     expect(status.autostartAcknowledged, true);
   });

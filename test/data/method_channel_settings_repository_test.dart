@@ -19,8 +19,8 @@ void main() {
           expect(call.method, 'getSettings');
           return {
             'reelsBlockEnabled': true,
-            'scrollLimitEnabled': false,
-            'scrollLimitMinutes': 3,
+            'feedLimitEnabled': false,
+            'feedLimitMinutes': 3,
           };
         });
     final repository = MethodChannelSettingsRepository(
@@ -30,8 +30,8 @@ void main() {
     final settings = await repository.getSettings();
 
     expect(settings.reelsBlockEnabled, true);
-    expect(settings.scrollLimitEnabled, false);
-    expect(settings.scrollLimitMinutes, 3);
+    expect(settings.feedLimitEnabled, false);
+    expect(settings.feedLimitMinutes, 3);
   });
 
   test('saveSettings sends the settings as arguments', () async {
@@ -48,12 +48,12 @@ void main() {
     await repository.saveSettings(
       const AppSettings(
         reelsBlockEnabled: false,
-        scrollLimitEnabled: true,
-        scrollLimitMinutes: 9,
+        feedLimitEnabled: true,
+        feedLimitMinutes: 9,
       ),
     );
 
-    expect(receivedArgs!['scrollLimitMinutes'], 9);
+    expect(receivedArgs!['feedLimitMinutes'], 9);
     expect(receivedArgs!['reelsBlockEnabled'], false);
   });
 

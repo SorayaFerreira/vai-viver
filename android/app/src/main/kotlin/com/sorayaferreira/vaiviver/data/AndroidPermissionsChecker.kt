@@ -1,10 +1,12 @@
 package com.sorayaferreira.vaiviver.data
 
+import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.PowerManager
 import android.provider.Settings
+import android.view.accessibility.AccessibilityManager
 import com.sorayaferreira.vaiviver.VaiViverAccessibilityService
 
 class AndroidPermissionsChecker(
@@ -19,6 +21,18 @@ class AndroidPermissionsChecker(
             Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
         ) ?: return false
         return enabled.split(":").any { it.equals(expected, ignoreCase = true) }
+    }
+
+    // The "enabled" list below only contains services Android has bound, so a
+    // crashed/killed service waiting to be restarted is missing from it.
+    override fun isAccessibilityServiceRunning(): Boolean {
+        val manager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+        return manager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
+            .any { info ->
+                val service = info.resolveInfo.serviceInfo
+                service.packageName == context.packageName &&
+                    service.name == VaiViverAccessibilityService::class.java.name
+            }
     }
 
     override fun isIgnoringBatteryOptimizations(): Boolean {

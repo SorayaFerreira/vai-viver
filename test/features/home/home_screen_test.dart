@@ -2,19 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:vaiviver/core/ui/stat_value.dart';
 import 'package:vaiviver/domain/models/daily_stats.dart';
 import 'package:vaiviver/domain/models/permission_status.dart';
 import 'package:vaiviver/features/home/home_screen.dart';
 import 'package:vaiviver/features/permissions/permissions_view_model.dart';
+import 'package:vaiviver/features/settings/settings_view_model.dart';
 import 'package:vaiviver/features/stats/stats_view_model.dart';
 
 import '../../fakes/fake_permissions_repository.dart';
+import '../../fakes/fake_settings_repository.dart';
 import '../../fakes/fake_stats_repository.dart';
+import '../../helpers/phone_viewport.dart';
+import '../../helpers/themed_app.dart';
 
 Widget _wrap(Widget child, {required List<Override> overrides}) {
   return ProviderScope(
-    overrides: overrides,
-    child: MaterialApp(
+    overrides: [
+      settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
+      ...overrides,
+    ],
+    child: themedApp(
       home: child,
       routes: {
         '/settings': (_) => const Scaffold(body: Text('settings-stub')),
@@ -32,7 +40,11 @@ void main() {
         overrides: [
           statsRepositoryProvider.overrideWithValue(
             FakeStatsRepository(
-              const DailyStats(reelsBlockedCount: 4, scrollSecondsSaved: 300),
+              const DailyStats(
+                reelsBlockedCount: 4,
+                feedSecondsToday: 300,
+                feedBlockedCount: 1,
+              ),
             ),
           ),
           permissionsRepositoryProvider.overrideWithValue(
@@ -43,8 +55,15 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Reels bloqueados hoje: 4'), findsOneWidget);
-    expect(find.text('Minutos de scroll evitados hoje: 5 min'), findsOneWidget);
+    expect(find.bySemanticsLabel('Reels bloqueados hoje: 4'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel('Tempo no Feed hoje: 5 de 20 min'),
+      findsOneWidget,
+    );
+    expect(
+      find.bySemanticsLabel('Saídas forçadas do Feed hoje: 1'),
+      findsOneWidget,
+    );
     expect(find.text('Proteções ativas'), findsOneWidget);
   });
 
@@ -99,7 +118,11 @@ void main() {
     tester,
   ) async {
     final statsRepo = FakeStatsRepository(
-      const DailyStats(reelsBlockedCount: 4, scrollSecondsSaved: 300),
+      const DailyStats(
+        reelsBlockedCount: 4,
+        feedSecondsToday: 300,
+        feedBlockedCount: 1,
+      ),
     );
     final permissionsRepo = FakePermissionsRepository(
       status: const PermissionStatus(
@@ -119,13 +142,14 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Reels bloqueados hoje: 4'), findsOneWidget);
+    expect(find.bySemanticsLabel('Reels bloqueados hoje: 4'), findsOneWidget);
     expect(find.text('Ação necessária'), findsOneWidget);
 
     // The world changes while the app is in the background.
     statsRepo.stats = const DailyStats(
       reelsBlockedCount: 9,
-      scrollSecondsSaved: 600,
+      feedSecondsToday: 600,
+      feedBlockedCount: 2,
     );
     permissionsRepo.status = const PermissionStatus(
       accessibilityEnabled: true,
@@ -135,19 +159,81 @@ void main() {
     await tester.pumpAndSettle();
 
     // Nothing re-fetches on a plain rebuild — still the old values.
-    expect(find.text('Reels bloqueados hoje: 4'), findsOneWidget);
+    expect(find.bySemanticsLabel('Reels bloqueados hoje: 4'), findsOneWidget);
     expect(find.text('Ação necessária'), findsOneWidget);
 
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await tester.pump();
     await tester.pumpAndSettle();
 
-    expect(find.text('Reels bloqueados hoje: 9'), findsOneWidget);
+    expect(find.bySemanticsLabel('Reels bloqueados hoje: 9'), findsOneWidget);
     expect(
-      find.text('Minutos de scroll evitados hoje: 10 min'),
+      find.bySemanticsLabel('Tempo no Feed hoje: 10 de 20 min'),
       findsOneWidget,
     );
     expect(find.text('Proteções ativas'), findsOneWidget);
     expect(find.text('Ação necessária'), findsNothing);
+  });
+
+  testWidgets('stats are listed one below the other, even with room to spare', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const HomeScreen(),
+        overrides: [
+          statsRepositoryProvider.overrideWithValue(FakeStatsRepository()),
+          permissionsRepositoryProvider.overrideWithValue(
+            FakePermissionsRepository(),
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final tops = find
+        .byType(StatValue)
+        .evaluate()
+        .map((e) => tester.getTopLeft(find.byWidget(e.widget)))
+        .toList();
+    expect(tops, hasLength(3));
+    expect(tops.map((o) => o.dx).toSet(), hasLength(1)); // same column
+    expect(tops[0].dy < tops[1].dy && tops[1].dy < tops[2].dy, isTrue);
+  });
+
+  group('layout fits the screen', () {
+    for (final viewport in phoneViewports) {
+      testWidgets('on $viewport', (tester) async {
+        applyViewport(tester, viewport);
+        await tester.pumpWidget(
+          _wrap(
+            const HomeScreen(),
+            overrides: [
+              statsRepositoryProvider.overrideWithValue(
+                FakeStatsRepository(
+                  const DailyStats(
+                    reelsBlockedCount: 128,
+                    feedSecondsToday: 5400,
+                    feedBlockedCount: 3,
+                  ),
+                ),
+              ),
+              permissionsRepositoryProvider.overrideWithValue(
+                FakePermissionsRepository(
+                  status: const PermissionStatus(
+                    accessibilityEnabled: false,
+                    batteryOptimizationIgnored: true,
+                    autostartAcknowledged: true,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await expectContentFitsScreen(tester, viewport);
+      });
+    }
   });
 }

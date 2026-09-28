@@ -9,7 +9,11 @@ import '../../fakes/fake_stats_repository.dart';
 void main() {
   test('refresh re-reads stats from the repository', () async {
     final fakeRepo = FakeStatsRepository(
-      const DailyStats(reelsBlockedCount: 1, scrollSecondsSaved: 30),
+      const DailyStats(
+        reelsBlockedCount: 1,
+        feedSecondsToday: 30,
+        feedBlockedCount: 0,
+      ),
     );
     final container = ProviderContainer(
       overrides: [statsRepositoryProvider.overrideWithValue(fakeRepo)],
@@ -19,7 +23,8 @@ void main() {
     await container.read(statsViewModelProvider.future);
     fakeRepo.stats = const DailyStats(
       reelsBlockedCount: 3,
-      scrollSecondsSaved: 90,
+      feedSecondsToday: 90,
+      feedBlockedCount: 0,
     );
     await container.read(statsViewModelProvider.notifier).refresh();
 

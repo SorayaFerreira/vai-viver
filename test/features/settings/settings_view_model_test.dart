@@ -6,7 +6,7 @@ import 'package:vaiviver/features/settings/settings_view_model.dart';
 import '../../fakes/fake_settings_repository.dart';
 
 void main() {
-  test('setScrollLimitMinutes saves and updates state', () async {
+  test('setFeedLimitMinutes saves and updates state', () async {
     final fakeRepo = FakeSettingsRepository();
     final container = ProviderContainer(
       overrides: [settingsRepositoryProvider.overrideWithValue(fakeRepo)],
@@ -16,10 +16,10 @@ void main() {
     await container.read(settingsViewModelProvider.future);
     await container
         .read(settingsViewModelProvider.notifier)
-        .setScrollLimitMinutes(7);
+        .setFeedLimitMinutes(7);
 
     expect(
-      container.read(settingsViewModelProvider).value!.scrollLimitMinutes,
+      container.read(settingsViewModelProvider).value!.feedLimitMinutes,
       7,
     );
     expect(fakeRepo.saveCallCount, 1);
@@ -54,7 +54,7 @@ void main() {
     await container.read(settingsViewModelProvider.future);
     await container
         .read(settingsViewModelProvider.notifier)
-        .setScrollLimitEnabled(false);
+        .setFeedLimitEnabled(false);
 
     final state = container.read(settingsViewModelProvider);
     expect(fakeRepo.saveCallCount, 1);

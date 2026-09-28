@@ -46,3 +46,9 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# FVM Version Cache
+.fvm/
+# Fonts are downloaded by tool/fetch_fonts.sh (Satoshi's license forbids
+# redistributing the files; this repository is public).
+/assets/fonts/

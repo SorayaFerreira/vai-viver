@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/theme/app_theme.dart';
+import 'core/ui/app_screen.dart';
+import 'core/ui/responsive_body.dart';
 import 'features/home/home_screen.dart';
 import 'features/onboarding/onboarding_flow_screen.dart';
 import 'features/permissions/permissions_screen.dart';
@@ -24,6 +27,9 @@ class VaiViverApp extends StatelessWidget {
       title: 'VaiViver',
       debugShowCheckedModeBanner: false,
       locale: const Locale('pt', 'BR'),
+      theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
+      themeMode: ThemeMode.system,
       routes: {
         '/settings': (_) => const SettingsScreen(),
         '/permissions': (_) => const PermissionsScreen(),
@@ -43,8 +49,9 @@ class AppStartupGate extends ConsumerWidget {
       data: (complete) =>
           complete ? const HomeScreen() : const OnboardingFlowScreen(),
       loading: () =>
-          const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (err, _) => Scaffold(body: Center(child: Text('Erro: $err'))),
+          const AppScreen(body: Center(child: CircularProgressIndicator())),
+      error: (err, _) =>
+          AppScreen(body: ResponsiveBody(child: Text('Erro: $err'))),
     );
   }
 }

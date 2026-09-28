@@ -15,12 +15,17 @@ class SettingsStoreTest {
         val store = SettingsStore(InMemoryKeyValueStore())
         val settings = AppSettings(
             reelsBlockEnabled = false,
-            scrollLimitEnabled = true,
-            scrollLimitMinutes = 5
+            feedLimitEnabled = true,
+            feedLimitMinutes = 25
         )
 
         store.setSettings(settings)
 
         assertEquals(settings, store.getSettings())
+    }
+
+    @Test
+    fun `default daily feed limit is 20 minutes`() {
+        assertEquals(20, SettingsStore(InMemoryKeyValueStore()).getSettings().feedLimitMinutes)
     }
 }

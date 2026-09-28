@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/theme/app_dimens.dart';
+import '../../core/ui/app_screen.dart';
+import '../../core/ui/glass_card.dart';
+import '../../core/ui/responsive_body.dart';
+import '../../core/ui/terminal_label.dart';
 import '../home/home_screen.dart';
 import '../permissions/accessibility_status_tile.dart';
 import '../permissions/autostart_ack_tile.dart';
@@ -67,7 +72,7 @@ class _OnboardingFlowScreenState extends ConsumerState<OnboardingFlowScreen>
   Widget build(BuildContext context) {
     final statusAsync = ref.watch(permissionsViewModelProvider);
 
-    return Scaffold(
+    return AppScreen(
       body: statusAsync.when(
         data: (status) => PageView(
           controller: _controller,
@@ -75,40 +80,53 @@ class _OnboardingFlowScreenState extends ConsumerState<OnboardingFlowScreen>
           children: [
             WelcomeStep(onNext: _goNext),
             _StepScaffold(
+              step: 1,
               onNext: _goNext,
               canAdvance: status.accessibilityEnabled,
               child: AccessibilityStatusTile(status: status),
             ),
             _StepScaffold(
+              step: 2,
               onNext: _goNext,
               child: BatteryOptimizationStatusTile(status: status),
             ),
             _StepScaffold(
+              step: 3,
               onNext: _goNext,
               child: AutostartAckTile(status: status),
             ),
             _StepScaffold(
+              step: 4,
               onNext: _finish,
               buttonLabel: 'Concluir',
-              child: const AppSettingsForm(),
+              child: const GlassCard(
+                padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                child: AppSettingsForm(),
+              ),
             ),
           ],
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('Erro: $err')),
+        error: (err, _) => ResponsiveBody(child: Text('Erro: $err')),
       ),
     );
   }
 }
 
+/// One onboarding step: a "setup n/4" prompt, the step's content (scrolls
+/// when it doesn't fit) and the advance button pinned above the nav bar.
 class _StepScaffold extends StatelessWidget {
   const _StepScaffold({
+    required this.step,
     required this.child,
     required this.onNext,
     this.buttonLabel = 'Próximo',
     this.canAdvance = true,
   });
 
+  static const _stepCount = 4;
+
+  final int step;
   final Widget child;
   final VoidCallback onNext;
   final String buttonLabel;
@@ -116,15 +134,17 @@ class _StepScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
+    return ResponsiveBody(
+      bottomAction: ElevatedButton(
+        onPressed: canAdvance ? onNext : null,
+        child: Text(buttonLabel),
+      ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(child: child),
-          ElevatedButton(
-            onPressed: canAdvance ? onNext : null,
-            child: Text(buttonLabel),
-          ),
+          TerminalLabel('setup $step/$_stepCount'),
+          const SizedBox(height: AppSpacing.lg),
+          child,
         ],
       ),
     );
