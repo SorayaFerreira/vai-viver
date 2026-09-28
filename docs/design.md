@@ -86,13 +86,21 @@ View (Flutter widgets)
 
 ### 4.1 Como funciona
 
-- Declarado no `AndroidManifest.xml` com `android:canRetrieveWindowContent="true"` e
-  `android:packageNames="com.instagram.android"` — o serviço **só recebe eventos do
-  Instagram**, nunca de outros apps (bom para bateria, e também significa que o
-  VaiViver não tem visibilidade sobre nenhum outro app do celular).
+- Declarado no `AndroidManifest.xml` com `android:canRetrieveWindowContent="true"`.
+  **Ajuste em relação à primeira versão deste documento:** para saber quando a
+  usuária *sai* do Instagram (e assim resetar o contador de scroll da sessão), o
+  serviço precisa observar `TYPE_WINDOW_STATE_CHANGED` em nível de sistema, sem o
+  filtro `android:packageNames`. Se esse filtro estivesse ativo, o Android
+  simplesmente não entregaria nenhum evento assim que outro app entrasse em
+  primeiro plano, e o serviço nunca saberia que a sessão do Instagram acabou.
+  Isso significa que o VaiViver recebe o **nome do pacote** de qualquer app que
+  entra em primeiro plano (necessário para detectar a troca), mas só inspeciona
+  **conteúdo de tela** (a árvore de nós) quando esse pacote é
+  `com.instagram.android` — para qualquer outro app, o evento é usado só para
+  comparar o nome do pacote e descartado em seguida, nunca lido a fundo.
 - Escuta `TYPE_WINDOW_STATE_CHANGED` / `TYPE_WINDOW_CONTENT_CHANGED` (para saber em
-  que tela do Instagram a usuária está) e `TYPE_VIEW_SCROLLED` (para medir rolagem
-  ativa no Feed).
+  que tela do Instagram a usuária está, e para detectar a saída do Instagram) e
+  `TYPE_VIEW_SCROLLED` (para medir rolagem ativa no Feed).
 - **Identificação da aba Reels e da aba Feed:** inspeção da árvore de nós
   (`AccessibilityNodeInfo`) da janela ativa, procurando por `viewIdResourceName` ou
   `contentDescription` conhecidos do Instagram — obtidos por engenharia reversa da
@@ -109,6 +117,31 @@ View (Flutter widgets)
   pode (1) exigir reativação manual do serviço após reiniciar o celular, e (2)
   matar o serviço em background se "Autostart" não estiver habilitado. O app só
   consegue orientar esses passos — não pode forçá-los programaticamente.
+- **Contagem de estatísticas em rajadas de eventos — corrigido:** nem
+  `ReelsTabRule` nem `FeedScrollLimitRule` decidem quando incrementar as
+  estatísticas — isso ficou centralizado no `VaiViverAccessibilityService`,
+  que mantém uma trava (`countedThisSession`) garantindo no máximo um
+  incremento por sessão, mesmo que múltiplos eventos de acessibilidade
+  cheguem antes de `GLOBAL_ACTION_HOME` efetivamente levar o Instagram para
+  segundo plano. `performGlobalAction(GLOBAL_ACTION_HOME)` continua sendo
+  chamado a cada evento correspondente (inofensivo), só a contagem é única
+  por sessão.
+- **Reset de sessão pode disparar por engano com teclado/notificações
+  (risco conhecido, não corrigido nesta versão):** o encerramento de sessão
+  (`onSessionEnded()`) é acionado por `TYPE_WINDOW_STATE_CHANGED` vindo de
+  um pacote que não é o Instagram — mas o Android também dispara esse
+  mesmo tipo de evento para Dialogs/PopupWindows, e tanto o teclado (dono:
+  o app de teclado) quanto o painel de volume e a bandeja de notificações
+  (dono: `com.android.systemui`) são implementados como Dialogs. Ou seja,
+  abrir o teclado pra comentar/buscar, ou apenas receber uma notificação
+  ou apertar o volume enquanto rola o Feed, pode resetar o contador de
+  scroll antes da hora. Não compromete segurança/privacidade (nenhum
+  conteúdo desses apps é lido, só o nome do pacote é comparado), mas pode
+  fazer o limite de scroll demorar mais que o configurado, ou nunca ser
+  atingido numa sessão de uso normal com notificações. Conserto correto:
+  confirmar via `rootInActiveWindow?.packageName` que o Instagram realmente
+  não é mais a janela ativa antes de encerrar a sessão, ou ignorar
+  especificamente janelas de teclado/SystemUI — ainda não implementado.
 
 ## 5. Fluxo de Onboarding (permissões)
 

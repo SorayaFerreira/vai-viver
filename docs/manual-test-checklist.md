@@ -12,7 +12,12 @@ Antes de considerar o MVP pronto, rode este roteiro no aparelho físico
 3. Compare com as constantes em `ReelsTabRule.REELS_TAB_VIEW_ID_KEYWORDS` /
    `REELS_TAB_CONTENT_DESCRIPTIONS` e `FeedScrollLimitRule.FEED_TAB_VIEW_ID_KEYWORDS`
    (`android/app/src/main/kotlin/com/sorayaferreira/vaiviver/detection/`).
-   Ajuste as listas se os valores reais forem diferentes.
+   Ajuste as listas se os valores reais forem diferentes. **Importante:**
+   confirme também que o atributo `selected`/`isSelected` (visível no
+   Accessibility Scanner) aparece no **mesmo nó** que carrega esse
+   `resource-id`/`content-description` — se o Instagram marcar `selected`
+   num container pai ou num filho diferente, as regras nunca vão bater,
+   mesmo com os identificadores certos.
 
 ## Onboarding
 
@@ -66,9 +71,17 @@ Antes de considerar o MVP pronto, rode este roteiro no aparelho físico
 17. Teste a contagem de bloqueios de Reels: faça 3–5 toques rápidos e
     deliberados na aba Reels (toques simples, não mantidos nem repetidos) e
     confirme que o contador "Reels bloqueados hoje" na tela Home aumenta por
-    volta de um por toque — não dois ou três por toque. Se o contador
-    saltar 2+ por toque, há um problema de latência em `ReelsTabRule` ou
-    `FeedScrollLimitRule` (sem "one-shot latch", as rajadas rápidas de eventos
-    de acessibilidade antes de `GLOBAL_ACTION_HOME` podem contar múltiplas
-    vezes). Nesse caso, a correção é adicionar um one-shot latch nas classes de
-    regra — ver `docs/design.md` seção 4.2, último bullet de risco.
+    volta de um por toque — não dois ou três por toque (o serviço já trava
+    a contagem em um incremento por sessão; este passo é só a confirmação
+    final no aparelho real).
+
+## Reset de sessão por engano (risco conhecido, ver design.md §4.2)
+
+18. Role o Feed continuamente e, no meio da rolagem, abra o teclado (toque
+    na busca ou em comentar um post) ou aperte um botão de volume — depois
+    volte a rolar até o tempo total configurado. Se o limite não disparar
+    no tempo esperado (ou nunca disparar nessa sessão), é o risco já
+    documentado: o teclado e os painéis do sistema (volume, notificações)
+    podem resetar o contador de scroll por engano. Não é uma falha de
+    segurança, só faz o limite demorar mais que o configurado — reportar
+    se isso acontecer na prática, para priorizar o conserto.
