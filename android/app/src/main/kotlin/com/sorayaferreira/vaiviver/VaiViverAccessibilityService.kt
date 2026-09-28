@@ -5,11 +5,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.ApplicationInfo
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import com.sorayaferreira.vaiviver.data.SettingsStore
 import com.sorayaferreira.vaiviver.data.SharedPreferencesKeyValueStore
@@ -21,8 +19,6 @@ import com.sorayaferreira.vaiviver.detection.FeedTimeTracker
 import com.sorayaferreira.vaiviver.detection.INSTAGRAM_PACKAGE
 import com.sorayaferreira.vaiviver.detection.ReelsTabRule
 import com.sorayaferreira.vaiviver.detection.RuleResult
-import com.sorayaferreira.vaiviver.detection.ScreenNode
-import com.sorayaferreira.vaiviver.detection.describeSelectedNodes
 import com.sorayaferreira.vaiviver.detection.evaluateRules
 import com.sorayaferreira.vaiviver.detection.isLeavingInstagram
 import com.sorayaferreira.vaiviver.detection.toScreenNode
@@ -34,7 +30,6 @@ class VaiViverAccessibilityService : AccessibilityService() {
     private lateinit var feedRule: FeedTimeLimitRule
     private lateinit var rules: List<DetectionRule>
     private var countedThisSession = false
-    private var lastTabLog: List<String>? = null
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -83,7 +78,6 @@ class VaiViverAccessibilityService : AccessibilityService() {
         } finally {
             rootNode.recycle()
         }
-        logSelectedTabs(screenNode)
 
         when (val result = evaluateRules(rules, screenNode, eventType)) {
             is RuleResult.Block -> {
@@ -126,16 +120,6 @@ class VaiViverAccessibilityService : AccessibilityService() {
         countedThisSession = false
     }
 
-    /** Debug builds only: logs the selected nodes whenever they change. */
-    private fun logSelectedTabs(screen: ScreenNode) {
-        if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE == 0) return
-        val summary = describeSelectedNodes(screen)
-        if (summary != lastTabLog) {
-            lastTabLog = summary
-            Log.d(TAG, "selected: $summary")
-        }
-    }
-
     override fun onInterrupt() = Unit
 
     override fun onDestroy() {
@@ -145,7 +129,6 @@ class VaiViverAccessibilityService : AccessibilityService() {
     }
 
     companion object {
-        private const val TAG = "VaiViver/tabs"
         private const val MIN_CHECK_DELAY_MS = 500L
     }
 }

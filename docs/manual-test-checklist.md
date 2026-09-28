@@ -13,14 +13,12 @@ Antes de considerar o MVP pronto, rode este roteiro no aparelho físico
    `REELS_TAB_CONTENT_DESCRIPTIONS` e `HomeTabDetector.VIEW_ID_KEYWORDS` /
    `CONTENT_DESCRIPTIONS`
    (`android/app/src/main/kotlin/com/sorayaferreira/vaiviver/detection/`).
-   Ajuste as listas se os valores reais forem diferentes. **Importante:**
-   confirme também que o atributo `selected`/`isSelected` (visível no
-   Accessibility Scanner) aparece no **mesmo nó** que carrega esse
-   `resource-id`/`content-description` — se o Instagram marcar `selected`
-   num container pai ou num filho diferente, as regras nunca vão bater,
-   mesmo com os identificadores certos.
-   Atalho: em build de debug (`flutter run`), `adb logcat -s VaiViver/tabs`
-   mostra os nós selecionados de cada tela do Instagram (só identificadores).
+   Ajuste as listas se os valores reais forem diferentes. **Importante:** o
+   Instagram marca `selected`/`isSelected` no **ícone filho** do botão da aba
+   (`tab_icon`, sem descrição), e às vezes também no próprio botão. O
+   `HomeTabDetector` aceita as duas formas (calibrado em 2026-09-28: botão
+   `feed_tab`, descrição "Home"); a `ReelsTabRule` ainda exige o `selected` no
+   mesmo nó que carrega o `resource-id`/`content-description`.
 
 ## Onboarding
 
