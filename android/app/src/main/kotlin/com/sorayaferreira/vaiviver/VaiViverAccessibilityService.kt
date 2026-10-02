@@ -61,7 +61,7 @@ class VaiViverAccessibilityService : AccessibilityService() {
         val eventPackage = event.packageName?.toString()
         if (eventPackage == INSTAGRAM_PACKAGE) {
             checkInstagramWindow(event.eventType)
-        } else if (isLeavingInstagram(eventPackage, event.eventType, activeWindowPackage())) {
+        } else if (isLeavingInstagram(eventPackage, event.eventType, ::activeWindowPackage)) {
             endSession()
         }
     }

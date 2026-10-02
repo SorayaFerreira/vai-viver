@@ -104,6 +104,11 @@ View (Flutter widgets)
   **conteúdo de tela** (a árvore de nós) quando esse pacote é
   `com.instagram.android` — para qualquer outro app, o evento é usado só para
   comparar o nome do pacote e descartado em seguida, nunca lido a fundo.
+  Para eventos de outros apps, a janela ativa (`rootInActiveWindow`, uma chamada
+  ao app em primeiro plano) só é consultada quando chega um
+  `TYPE_WINDOW_STATE_CHANGED` de outro pacote;
+  os `TYPE_WINDOW_CONTENT_CHANGED` de outros apps, que chegam várias vezes por
+  segundo, são descartados pelo tipo, sem consulta (2026-10-02).
 - Escuta `TYPE_WINDOW_STATE_CHANGED` / `TYPE_WINDOW_CONTENT_CHANGED` (para saber em
   que tela do Instagram a usuária está, e para detectar a saída do Instagram).
 - **Identificação da aba Reels e da aba Feed:** inspeção da árvore de nós
