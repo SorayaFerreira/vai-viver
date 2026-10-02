@@ -1,17 +1,16 @@
-# vaiviver
+# Bem-vindo ao VaiViver!
 
-A new Flutter project.
+O VaiViver é um aplicativo simplista e leve que te ajuda a reduzir o tempo desperdiçado no instagram. Mais especificamente, ele controla o tempo no feed e bloqueia a visualização de reels.
 
-## Getting Started
+Há um certo tempo em que eu venho testando várias técnicas diferentes para reduzir meu tempo de tela no Insta. Então, num belo dia, eu tive a ideia de usar minhas habilidades como desenvolvedora de software para resolver meu próprio problema. Implementei com ajuda do Claude Code o aplicativo com apenas essas duas formas de controle, porque elas são as funcionalidades responsáveis pelo maior desperdício de tempo para mim no Instagram.
 
-This project is a starting point for a Flutter application.
+Para o design system, eu usei como inspiração o site [krython.com](https://krython.com/), que eu gosto muito, aliás. Para arquitetura, usei MVVM e alguns padrões de projeto. Quero usar escrever futuramente, nesse repositório, alguns artigos com aprendizados que eu tive no projeto, listando os padrões mais interessantes.
 
-A few resources to get you started if this is your first Flutter project:
+Infelizmente, o aplicativo não está disponível na play store, e acho que nem vai ficar, porque ele acessa permissões super sensíveis do dispositivo, então vai me dar muito trabalho publicar na loja. No entanto, se você tiver acesso a um computador e um celular com android, você pode seguir as instruções a seguir para instalar o app.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Instruções
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<details>
+<summary><b>Instruções</b></summary>
+Em breve!!!!
+</details>
